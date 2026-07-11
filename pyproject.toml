@@ -29,6 +29,7 @@ python_files = ["test_*.py"]
 
 [tool.ruff]
 line-length = 110
+exclude = ["upstream"]
 
 [tool.ruff.lint]
 select = ["F", "E", "W", "I", "D"]

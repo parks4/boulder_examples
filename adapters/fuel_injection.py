@@ -1,7 +1,7 @@
 """Adapter for sim2stone: fuel injection network without long integration."""
 
-import numpy as np
 import cantera as ct
+import numpy as np
 
 gas = ct.Solution("nDodecane_Reitz.yaml", "nDodecane_IG")
 gas.case_sensitive_species_names = True
