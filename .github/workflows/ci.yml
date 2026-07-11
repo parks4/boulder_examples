@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main, poc]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          cache-environment: true
+          cache-environment-key: boulder-examples-${{ hashFiles('environment.yml', 'requirements*.txt') }}
+
+      - name: Run tests
+        shell: bash -l {0}
+        run: make test
+
+      - name: Ruff
+        shell: bash -l {0}
+        run: make qa
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          cache-environment: true
+          cache-environment-key: boulder-examples-docs-${{ hashFiles('environment.yml') }}
+
+      - name: Build docs
+        shell: bash -l {0}
+        run: |
+          python scripts/build_catalog_rst.py
+          cd docs && python -m sphinx -b html . _build/html -W --keep-going -n
+
+  pages:
+    if: github.ref == 'refs/heads/main'
+    needs: docs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+
+      - name: Build docs artifact
+        shell: bash -l {0}
+        run: |
+          python scripts/build_catalog_rst.py
+          cd docs && python -m sphinx -b html . _build/html -W --keep-going -n
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_build/html
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

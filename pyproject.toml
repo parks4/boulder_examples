@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "boulder-examples"
+version = "0.1.0"
+description = "Cantera reactor-network examples in Boulder STONE format"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+dependencies = [
+  "boulder>=0.6.2",
+  "cantera>=3.0.0",
+  "PyYAML>=6.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["boulder_examples*"]
+
+[tool.pytest.ini_options]
+addopts = ["--strict-markers", "--strict-config", "--verbose", "--tb=short"]
+markers = [
+  "integration: integration tests (subprocess / CLI)",
+  "slow: slow-running examples",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+select = ["F", "E", "W", "I", "D"]
+ignore = ["D1"]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*.py" = ["E402"]

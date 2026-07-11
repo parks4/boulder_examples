@@ -1,0 +1,197 @@
+upstream:
+  repository: https://github.com/Cantera/cantera
+  path: samples/python/reactors
+  ref: main
+  license: BSD-3-Clause
+
+codespaces:
+  repo: parks4/boulder_examples
+  branch: main
+
+examples:
+  - id: combustor
+    title: Steady combustor residence time
+    status: generated
+    upstream_file: combustor.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/combustor.py
+    stone_yaml: examples/cantera/combustor.yaml
+    mechanism: gri30.yaml
+    plot_reactor: combustor
+    screenshot: docs/_static/screenshots/combustor.png
+    notes: >-
+      Steady-state WSR with residence-time MFC closure and continuation solver.
+      Boulder Plots should show heat-release and temperature versus residence time.
+
+  - id: reactor2
+    title: Piston reactor with heat transfer
+    status: generated
+    upstream_file: reactor2.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor2.py
+    stone_yaml: examples/cantera/reactor2.yaml
+    mechanism: gri30.yaml
+    plot_reactor: reactor
+    screenshot: docs/_static/screenshots/reactor2.png
+    notes: >-
+      Transient advance-grid example. Wall heat-transfer coefficients are only
+      partially captured in STONE; plots focus on reactor temperature evolution.
+
+  - id: nanosecond_pulse_discharge
+    title: Nanosecond pulse discharge
+    status: adapted
+    upstream_file: nanosecond_pulse_discharge.py
+    adapter_file: adapters/nanosecond_pulse_discharge.py
+    upstream_url: >-
+      https://github.com/Cantera/cantera/blob/main/samples/python/reactors/nanosecond_pulse_discharge.py
+    stone_yaml: examples/cantera/nanosecond_pulse_discharge.yaml
+    mechanism: example_data/methane-plasma-pavan-2023.yaml
+    plot_reactor: reactor
+    screenshot: docs/_static/screenshots/nanosecond_pulse_discharge.png
+    notes: >-
+      Plasma micro-step example with Gaussian reduced-electric-field signal.
+
+  - id: mix1
+    title: Mixer with two inlet streams
+    status: generated
+    upstream_file: mix1.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/mix1.py
+    stone_yaml: examples/cantera/mix1.yaml
+    mechanism: gri30.yaml
+    plot_reactor: mixer
+    screenshot: docs/_static/screenshots/mix1.png
+    notes: Dual-mechanism steady mixer with MFC and valve connections.
+
+  - id: reactor1
+    title: Constant-pressure ignition
+    status: generated
+    upstream_file: reactor1.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor1.py
+    stone_yaml: examples/cantera/reactor1.yaml
+    mechanism: h2o2.yaml
+    plot_reactor: reactor
+    screenshot: docs/_static/screenshots/reactor1.png
+    notes: Single IdealGasConstPressureReactor with temperature advance limit.
+
+  - id: periodic_cstr
+    title: Periodic CSTR
+    status: adapted
+    upstream_file: periodic_cstr.py
+    adapter_file: adapters/periodic_cstr.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/periodic_cstr.py
+    stone_yaml: examples/cantera/periodic_cstr.yaml
+    mechanism: h2o2.yaml
+    plot_reactor: cstr
+    screenshot: docs/_static/screenshots/periodic_cstr.png
+    notes: CSTR with MFC, valve, and heat-transfer wall.
+
+  - id: fuel_injection
+    title: Fuel injection with Gaussian pulse
+    status: adapted
+    upstream_file: fuel_injection.py
+    adapter_file: adapters/fuel_injection.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/fuel_injection.py
+    stone_yaml: examples/cantera/fuel_injection.yaml
+    mechanism: nDodecane_Reitz.yaml
+    plot_reactor: combustor
+    screenshot: docs/_static/screenshots/fuel_injection.png
+    notes: Transient fuel pulse; Gaussian MFC signal when AST detection succeeds.
+
+  - id: preconditioned_integration
+    title: Preconditioned single-reactor integration
+    status: unsupported
+    upstream_file: preconditioned_integration.py
+    upstream_url: >-
+      https://github.com/Cantera/cantera/blob/main/samples/python/reactors/preconditioned_integration.py
+    unsupported_reason: >-
+      Requires example_data/n-heptane-NUIG-2016.yaml, which is not bundled in the
+      Cantera 3.2 conda distribution used by Boulder CI.
+
+  - id: 1D_packed_bed
+    title: 1D packed bed (DAE)
+    status: unsupported
+    upstream_file: 1D_packed_bed.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/1D_packed_bed.py
+    unsupported_reason: Custom scikits.odes DAE packed-bed model; no global ReactorNet.
+  - id: 1D_pfr_surfchem
+    title: 1D PFR surface chemistry
+    status: unsupported
+    upstream_file: 1D_pfr_surfchem.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/1D_pfr_surfchem.py
+    unsupported_reason: Uses FlowReactor and spatial surface chemistry not supported by Boulder.
+  - id: continuous_reactor
+    title: Continuous reactor temperature sweep
+    status: unsupported
+    upstream_file: continuous_reactor.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/continuous_reactor.py
+    unsupported_reason: Outer temperature sweep and time-varying residence time are not one static STONE file.
+  - id: custom
+    title: Custom SciPy ODE
+    status: unsupported
+    upstream_file: custom.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/custom.py
+    unsupported_reason: No ReactorNet; integrates ODEs directly with SciPy.
+  - id: custom2
+    title: Extensible inertial wall reactor
+    status: unsupported
+    upstream_file: custom2.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/custom2.py
+    unsupported_reason: ExtensibleIdealGasReactor subclass with extra state is not rebuildable in Boulder.
+  - id: ic_engine
+    title: Internal combustion engine cycle
+    status: unsupported
+    upstream_file: ic_engine.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/ic_engine.py
+    unsupported_reason: Valves and MFCs use time_function lambdas and moving piston walls.
+  - id: non_ideal_shock_tube
+    title: Non-ideal shock tube ignition delay sweep
+    status: unsupported
+    upstream_file: non_ideal_shock_tube.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/non_ideal_shock_tube.py
+    unsupported_reason: Multi-temperature IDT sweep and real-gas phase switching are not static STONE.
+  - id: pfr
+    title: Plug-flow reactor (two methods)
+    status: unsupported
+    upstream_file: pfr.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/pfr.py
+    unsupported_reason: Multiple ReactorNet objects and chain/Lagrangian algorithms are not one static YAML.
+  - id: piston
+    title: Moving piston with velocity wall
+    status: unsupported
+    upstream_file: piston.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/piston.py
+    unsupported_reason: Wall velocity callable and dual-mechanism piston dynamics are not captured in STONE.
+  - id: plasma
+    title: Isothermal plasma electron balance
+    status: unsupported
+    upstream_file: plasma.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/plasma.py
+    unsupported_reason: No ReactorNet; SciPy ODE for electron density.
+  - id: porous_media_burner
+    title: Porous media burner cascade
+    status: unsupported
+    upstream_file: porous_media_burner.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/porous_media_burner.py
+    unsupported_reason: Custom ExtensibleIdealGasConstPressureReactor cascade with radiation.
+  - id: preconditioned_network
+    title: Preconditioned multi-sector network
+    status: unsupported
+    upstream_file: preconditioned_network.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/preconditioned_network.py
+    unsupported_reason: Multiple coupled networks and preconditioner benchmarking loops.
+  - id: sensitivity1
+    title: Sensitivity analysis
+    status: unsupported
+    upstream_file: sensitivity1.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/sensitivity1.py
+    unsupported_reason: ReactorNet sensitivity API is not represented in STONE.
+  - id: surf_pfr
+    title: Surface PFR (FlowReactor)
+    status: unsupported
+    upstream_file: surf_pfr.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr.py
+    unsupported_reason: FlowReactor and FlowReactorSurface are unsupported in Boulder.
+  - id: surf_pfr_chain
+    title: Surface PFR chain
+    status: unsupported
+    upstream_file: surf_pfr_chain.py
+    upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr_chain.py
+    unsupported_reason: Repeated steady march with ReactorSurface chain is an algorithm, not static STONE.

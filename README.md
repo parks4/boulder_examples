@@ -1,18 +1,84 @@
-\# Boulder Examples
+# Boulder Examples
 
+Official [Boulder](https://github.com/parks4/boulder) example catalog derived from the
+[Cantera Python reactor samples](https://github.com/Cantera/cantera/tree/main/samples/python/reactors).
 
+Each runnable example is provided as a **STONE YAML** file that opens in the Boulder GUI.
+Unsupported upstream samples are listed in the catalog with an explicit technical reason.
 
-Show all Cantera \[network reactor examples](https://cantera.org/stable/examples/python/reactors/index.html) with the Boulder GUI.
+## How examples are generated
 
-
-
-Examples are generated with
-
-
+Runnable YAML files under `examples/cantera/` are produced with Boulder’s `sim2stone` tool:
 
 ```bash
-
-sim2scape example\_file.py
-
+sim2stone upstream/cantera/reactors/<script>.py -o examples/cantera/<name>.yaml --mechanism <mech>
 ```
 
+Or regenerate the whole runnable set:
+
+```bash
+python scripts/generate_examples.py
+```
+
+Upstream scripts are vendored unchanged under `upstream/cantera/reactors/` at a pinned
+Cantera commit recorded in [`examples/manifest.yaml`](examples/manifest.yaml).
+
+## Quick start (Conda)
+
+```bash
+conda env create -n boulder-examples -f environment.yml
+conda activate boulder-examples
+make test
+make docs-build
+```
+
+Launch an example in the GUI:
+
+```bash
+boulder examples/cantera/combustor.yaml --no-open
+```
+
+Headless download of the generated Cantera Python script:
+
+```bash
+boulder examples/cantera/reactor2.yaml --headless --download /tmp/reactor2.py
+python /tmp/reactor2.py
+```
+
+## GitHub Codespaces
+
+Open this repository in a Codespace (`.devcontainer/`) and run:
+
+```bash
+boulder examples/cantera/<example>.yaml --no-open
+```
+
+The online docs at GitHub Pages include per-example Codespaces launch links.
+
+## Documentation
+
+Sphinx docs live under `docs/`. Each runnable example page shows:
+
+- upstream provenance and adaptation notes
+- the STONE YAML
+- a post-solve Boulder GUI screenshot with the Plots panel visible
+
+Refresh screenshots after UI or example changes:
+
+```bash
+make screenshot
+```
+
+## Testing
+
+```bash
+make test
+```
+
+Integration tests assert that every runnable YAML validates and that Boulder’s headless
+`--download` Python script executes successfully (with documented skips for known-hard cases).
+
+## License
+
+MIT — see [LICENSE](LICENSE). Vendored Cantera samples are BSD-licensed; see
+[LICENSES/Cantera.txt](LICENSES/Cantera.txt).
