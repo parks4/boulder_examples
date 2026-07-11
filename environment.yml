@@ -6,6 +6,8 @@ dependencies:
   - pip
   - cantera
   - numpy>=2.4.0
+  - pandas
+  - h5py
   - matplotlib
   - make
   - myst-parser
