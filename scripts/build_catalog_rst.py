@@ -2,11 +2,17 @@
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from boulder_examples.catalog import codespaces_url as _codespaces_url  # noqa: E402
+
 MANIFEST = REPO_ROOT / "examples" / "manifest.yaml"
 OUTPUT = REPO_ROOT / "docs" / "catalog.rst"
 
@@ -46,7 +52,12 @@ def main() -> int:
         lines.append(f".. image:: /{rel}")
         lines.append("   :width: 100%")
         lines.append("")
-        lines.append("Codespaces launch:")
+        lines.append(
+            f"`Launch in GitHub Codespaces <{_codespaces_url(entry['id'])}>`_ "
+            f"— opens this example running in Boulder, forwarded port opens in your browser."
+        )
+        lines.append("")
+        lines.append("Or run locally:")
         lines.append("")
         lines.append(".. code-block:: bash")
         lines.append("")

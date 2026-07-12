@@ -41,9 +41,7 @@ reactor_volume = 30.5 * (1e-2) ** 3  # m3
 fuel_air_mixture_tank = ct.Reservoir(gas, name="fuel_air_mixture_tank")
 exhaust = ct.Reservoir(gas, name="exhaust")
 
-stirred_reactor = ct.IdealGasMoleReactor(
-    gas, energy="off", volume=reactor_volume, name="stirred_reactor"
-)
+stirred_reactor = ct.IdealGasMoleReactor(gas, energy="off", volume=reactor_volume, name="stirred_reactor")
 
 
 def mdot(t):

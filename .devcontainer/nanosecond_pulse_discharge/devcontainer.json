@@ -1,0 +1,27 @@
+{
+  "name": "Boulder - Nanosecond pulse discharge",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": "../.."
+  },
+  "forwardPorts": [
+    8050
+  ],
+  "postCreateCommand": "conda env update -n boulder-examples -f environment.yml --prune",
+  "postAttachCommand": "conda run -n boulder-examples boulder examples/nanosecond_pulse_discharge.yaml --host 0.0.0.0 --no-open",
+  "portsAttributes": {
+    "8050": {
+      "label": "Boulder - Nanosecond pulse discharge",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff"
+      ]
+    }
+  },
+  "remoteUser": "vscode"
+}

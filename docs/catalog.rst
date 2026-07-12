@@ -18,7 +18,9 @@ Steady-state WSR with residence-time MFC closure and continuation solver. Boulde
 .. image:: /_static/screenshots/combustor.png
    :width: 100%
 
-Codespaces launch:
+`Launch in GitHub Codespaces <https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/combustor/devcontainer.json&quickstart=1>`_ — opens this example running in Boulder, forwarded port opens in your browser.
+
+Or run locally:
 
 .. code-block:: bash
 
@@ -37,7 +39,9 @@ Transient advance-grid example. Wall heat-transfer coefficients are only partial
 .. image:: /_static/screenshots/reactor2.png
    :width: 100%
 
-Codespaces launch:
+`Launch in GitHub Codespaces <https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/reactor2/devcontainer.json&quickstart=1>`_ — opens this example running in Boulder, forwarded port opens in your browser.
+
+Or run locally:
 
 .. code-block:: bash
 
@@ -56,7 +60,9 @@ Plasma micro-step example with Gaussian reduced-electric-field signal.
 .. image:: /_static/screenshots/nanosecond_pulse_discharge.png
    :width: 100%
 
-Codespaces launch:
+`Launch in GitHub Codespaces <https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/nanosecond_pulse_discharge/devcontainer.json&quickstart=1>`_ — opens this example running in Boulder, forwarded port opens in your browser.
+
+Or run locally:
 
 .. code-block:: bash
 
@@ -75,7 +81,9 @@ Dual-mechanism steady mixer with MFC and valve; uses solve_steady and OutletSink
 .. image:: /_static/screenshots/mix1.png
    :width: 100%
 
-Codespaces launch:
+`Launch in GitHub Codespaces <https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/mix1/devcontainer.json&quickstart=1>`_ — opens this example running in Boulder, forwarded port opens in your browser.
+
+Or run locally:
 
 .. code-block:: bash
 
@@ -94,7 +102,9 @@ Single IdealGasConstPressureReactor with temperature advance limit and advance_g
 .. image:: /_static/screenshots/reactor1.png
    :width: 100%
 
-Codespaces launch:
+`Launch in GitHub Codespaces <https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/reactor1/devcontainer.json&quickstart=1>`_ — opens this example running in Boulder, forwarded port opens in your browser.
+
+Or run locally:
 
 .. code-block:: bash
 
@@ -113,7 +123,9 @@ CSTR with MFC, valve, and heat-transfer wall.
 .. image:: /_static/screenshots/periodic_cstr.png
    :width: 100%
 
-Codespaces launch:
+`Launch in GitHub Codespaces <https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/periodic_cstr/devcontainer.json&quickstart=1>`_ — opens this example running in Boulder, forwarded port opens in your browser.
+
+Or run locally:
 
 .. code-block:: bash
 
@@ -132,7 +144,9 @@ Transient fuel pulse; Gaussian MFC signal when AST detection succeeds.
 .. image:: /_static/screenshots/fuel_injection.png
    :width: 100%
 
-Codespaces launch:
+`Launch in GitHub Codespaces <https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/fuel_injection/devcontainer.json&quickstart=1>`_ — opens this example running in Boulder, forwarded port opens in your browser.
+
+Or run locally:
 
 .. code-block:: bash
 
@@ -172,7 +186,9 @@ The outer temperature sweep is not one static STONE file (STONE's inline sweep:/
 .. image:: /_static/screenshots/continuous_reactor.png
    :width: 100%
 
-Codespaces launch:
+`Launch in GitHub Codespaces <https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/continuous_reactor/devcontainer.json&quickstart=1>`_ — opens this example running in Boulder, forwarded port opens in your browser.
+
+Or run locally:
 
 .. code-block:: bash
 

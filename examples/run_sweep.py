@@ -31,7 +31,6 @@ from pathlib import Path
 
 import cantera as ct
 import h5py
-
 from boulder.payload_store import gui_payload_from_solution_array, write_payload
 
 # Same eleven points and reactor parameters as upstream continuous_reactor.py's
@@ -47,18 +46,14 @@ REACTOR_ID = "stirred_reactor"
 MECHANISM = "gri30.yaml"
 
 
-def _solve_one_temperature(
-    reactor_temperature: float, inlet_X: dict
-) -> ct.SolutionArray:
+def _solve_one_temperature(reactor_temperature: float, inlet_X: dict) -> ct.SolutionArray:
     """Build and solve the CSTR at one inlet temperature; return its trajectory."""
     gas = ct.Solution(MECHANISM)
     gas.TPX = reactor_temperature, REACTOR_PRESSURE, inlet_X
 
     tank = ct.Reservoir(gas)
     exhaust = ct.Reservoir(gas)
-    reactor = ct.IdealGasMoleReactor(
-        gas, energy="off", volume=REACTOR_VOLUME_M3, name=REACTOR_ID
-    )
+    reactor = ct.IdealGasMoleReactor(gas, energy="off", volume=REACTOR_VOLUME_M3, name=REACTOR_ID)
 
     def mdot(t: float) -> float:
         return reactor.mass / RESIDENCE_TIME_S
@@ -107,9 +102,7 @@ def main(argv: list) -> int:
         inlet_X = final_X
 
         scenario_id = f"T0_{reactor_temperature}K"
-        scenario_kpis[scenario_id] = {
-            f"final_X_{sp}": float(final_X[sp]) for sp in kpi_species
-        }
+        scenario_kpis[scenario_id] = {f"final_X_{sp}": float(final_X[sp]) for sp in kpi_species}
         payload = gui_payload_from_solution_array(history, REACTOR_ID)
         write_payload(
             store_path,
