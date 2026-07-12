@@ -1,4 +1,4 @@
-name: boulder-examples
+name: boulder
 channels:
   - conda-forge
 dependencies:

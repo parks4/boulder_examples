@@ -32,6 +32,7 @@ from boulder_examples.catalog import (  # noqa: E402
 )
 
 PORT = 8050
+CONDA_ENV = "boulder"
 README = REPO_ROOT / "README.md"
 LAUNCH_LINKS_START = "<!-- LAUNCH_LINKS:START -->"
 LAUNCH_LINKS_END = "<!-- LAUNCH_LINKS:END -->"
@@ -47,10 +48,16 @@ def _config_for(entry: dict) -> dict:
             "context": "../..",
         },
         "forwardPorts": [PORT],
-        "postCreateCommand": ("conda env update -n boulder-examples -f environment.yml --prune"),
-        "postAttachCommand": (
-            f"conda run -n boulder-examples boulder examples/{example_id}.yaml --host 0.0.0.0 --no-open"
+        "postCreateCommand": (
+            f"conda env update -n {CONDA_ENV} -f environment.yml --prune"
         ),
+        "postAttachCommand": (
+            f"conda run -n {CONDA_ENV} boulder examples/{example_id}.yaml "
+            f"--host 0.0.0.0 --no-open"
+        ),
+        "remoteEnv": {
+            "PATH": f"/opt/conda/envs/{CONDA_ENV}/bin:${{containerEnv:PATH}}"
+        },
         "portsAttributes": {
             str(PORT): {
                 "label": f"Boulder - {title}",

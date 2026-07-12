@@ -4,7 +4,7 @@ Contributing
 Regenerating STONE YAML
 -----------------------
 
-1. Ensure the ``boulder-examples`` Conda environment is active.
+1. Ensure the ``boulder`` Conda environment is active.
 2. Refresh vendored upstream scripts::
 
       python scripts/download_upstream.py
