@@ -103,8 +103,10 @@ def _postprocess_body(example_id: str, body: str) -> str:
         )
     if example_id == "nanosecond_pulse_discharge":
         body = re.sub(
-            r"-\n# derived_via: ast_match\n  id: gaussian_EN\n  kind: Gaussian\n  peak: ([^\n]+)\n  center: ([^\n]+)\n  fwhm: ([^\n]+)",
-            r"-\n# derived_via: ast_match\n  id: gaussian_EN\n  Gaussian:\n    peak: \1\n    center: \2\n    fwhm: \3",
+            r"-\n# derived_via: ast_match\n  id: gaussian_EN\n  kind: Gaussian\n"
+            r"  peak: ([^\n]+)\n  center: ([^\n]+)\n  fwhm: ([^\n]+)",
+            r"-\n# derived_via: ast_match\n  id: gaussian_EN\n  Gaussian:\n"
+            r"    peak: \1\n    center: \2\n    fwhm: \3",
             body,
         )
     if example_id == "continuous_reactor":
