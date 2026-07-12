@@ -1,7 +1,0 @@
-Cantera sample scripts vendored under upstream/cantera/reactors/ are derived from the
-Cantera project (https://cantera.org) and are distributed under the Cantera BSD
-3-clause license. See the upstream repository for the full license text:
-
-https://github.com/Cantera/cantera/blob/main/License.txt
-
-Each vendored file retains its upstream copyright and license header where present.

@@ -4,17 +4,18 @@
 from __future__ import annotations
 
 import os
+import re
 import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 UPSTREAM_DIR = REPO_ROOT / "upstream" / "cantera" / "reactors"
 ADAPTER_DIR = REPO_ROOT / "adapters"
-OUTPUT_DIR = REPO_ROOT / "examples" / "cantera"
+OUTPUT_DIR = REPO_ROOT / "examples"
 
 # (id, source script relative to repo root, default mechanism, reactor_net var)
 _GENERATED: list[tuple[str, Path, str, str | None]] = [
-    ("combustor", UPSTREAM_DIR / "combustor.py", "gri30.yaml", None),
+    ("combustor", ADAPTER_DIR / "combustor.py", "gri30.yaml", "sim"),
     ("reactor2", UPSTREAM_DIR / "reactor2.py", "gri30.yaml", None),
     (
         "nanosecond_pulse_discharge",
@@ -22,8 +23,8 @@ _GENERATED: list[tuple[str, Path, str, str | None]] = [
         "example_data/methane-plasma-pavan-2023.yaml",
         None,
     ),
-    ("mix1", UPSTREAM_DIR / "mix1.py", "gri30.yaml", None),
-    ("reactor1", UPSTREAM_DIR / "reactor1.py", "h2o2.yaml", None),
+    ("mix1", ADAPTER_DIR / "mix1.py", "gri30.yaml", "sim"),
+    ("reactor1", ADAPTER_DIR / "reactor1.py", "h2o2.yaml", "sim"),
     ("periodic_cstr", ADAPTER_DIR / "periodic_cstr.py", "h2o2.yaml", None),
     ("fuel_injection", ADAPTER_DIR / "fuel_injection.py", "nDodecane_Reitz.yaml", None),
 ]
@@ -35,6 +36,31 @@ def _header(command: str) -> str:
         f"# Source repository: https://github.com/Cantera/cantera\n"
         f"# Do not edit by hand; regenerate with scripts/generate_examples.py\n"
     )
+
+
+def _display_path(path: Path) -> str:
+    """Repo-relative path for provenance headers (portable across machines)."""
+    return path.resolve().relative_to(REPO_ROOT.parent).as_posix()
+
+
+def _sim2stone_command(
+    script: Path,
+    out_yaml: Path,
+    mechanism: str,
+    var_name: str | None,
+) -> str:
+    parts = [
+        "sim2stone",
+        _display_path(script),
+        "-o",
+        _display_path(out_yaml),
+        "--mechanism",
+        mechanism,
+        "--no-comments",
+    ]
+    if var_name:
+        parts.extend(["--var", var_name])
+    return " ".join(parts)
 
 
 def _cantera_env() -> dict[str, str]:
@@ -52,8 +78,44 @@ def _cantera_env() -> dict[str, str]:
     return {**os.environ, "CANTERA_DATA": os.pathsep.join(parts)}
 
 
+def _postprocess_body(example_id: str, body: str) -> str:
+    """Apply catalog-specific YAML fixes after sim2stone."""
+    if example_id == "mix1":
+        body = re.sub(
+            r"- id: outlet\n  Reservoir:\n(?:    .+\n)+",
+            "- id: outlet\n  OutletSink: {}\n",
+            body,
+        )
+    if example_id == "combustor":
+        body = re.sub(
+            r"continuation:\n(?:# derived_via: ast_match\n)?(?:  .+\n)+",
+            "",
+            body,
+        )
+        body = body.replace(
+            "    closure: residence_time\n    tau_s: '{{residence_time}}'",
+            "    closure: residence_time\n    tau_s: 0.1",
+        )
+    if example_id == "nanosecond_pulse_discharge":
+        body = re.sub(
+            r"-\n# derived_via: ast_match\n  id: gaussian_EN\n  kind: Gaussian\n  peak: ([^\n]+)\n  center: ([^\n]+)\n  fwhm: ([^\n]+)",
+            r"-\n# derived_via: ast_match\n  id: gaussian_EN\n  Gaussian:\n    peak: \1\n    center: \2\n    fwhm: \3",
+            body,
+        )
+    if example_id == "fuel_injection":
+        body = body.replace(
+            "phases:\n  gas:\n    mechanism: nDodecane_Reitz.yaml\n",
+            "phases:\n  gas:\n    mechanism: nDodecane_Reitz.yaml#nDodecane_IG\n",
+        )
+        body = body.replace(
+            "settings: {}\n",
+            "settings:\n  solver:\n    kind: advance_grid\n    grid: {start: 0.0, stop: 10.0, dt: 0.01}\n",
+        )
+    return body
+
+
 def main() -> int:
-    """Run sim2stone for each generated example and write YAML under examples/cantera."""
+    """Run sim2stone for each generated example and write YAML under examples/."""
     os.environ.update(_cantera_env())
     os.environ.setdefault("MPLBACKEND", "Agg")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -81,8 +143,8 @@ def main() -> int:
             print(f"sim2stone failed for {example_id}", file=sys.stderr)
             failures += 1
             continue
-        body = out_yaml.read_text(encoding="utf-8")
-        command = "sim2stone " + " ".join(args)
+        body = _postprocess_body(example_id, out_yaml.read_text(encoding="utf-8"))
+        command = _sim2stone_command(script, out_yaml, mechanism, var_name)
         out_yaml.write_text(_header(command) + body, encoding="utf-8")
         print(f"generated {out_yaml.name}")
     return 1 if failures else 0

@@ -33,9 +33,10 @@ pfr_XH2_t.png
 T.png
 plasma-density
 
-# Screenshots temp
+# Screenshots (local capture tooling; assets may still be committed under docs/)
 .playwright/
 screenshots-tmp/
+scripts/capture_screenshots.py
 
 # IDE
 .vscode/

@@ -3,12 +3,14 @@ Example catalog
 
 Pinned upstream: ``https://github.com/Cantera/cantera`` ``samples/python/reactors`` @ ``main``.
 
+See :doc:`boulder:stone` for the STONE YAML format and :doc:`boulder:cantera_upstream_examples` for solver mapping from upstream Cantera scripts. Networks are simulated with :class:`cantera.ReactorNet`.
+
 Steady combustor residence time
 -------------------------------
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/combustor.py`
 :Status: **generated**
-:STONE: ``examples/cantera/combustor.yaml``
+:STONE: ``examples/combustor.yaml``
 :Mechanism: ``gri30.yaml``
 
 Steady-state WSR with residence-time MFC closure and continuation solver. Boulder Plots should show heat-release and temperature versus residence time.
@@ -20,14 +22,14 @@ Codespaces launch:
 
 .. code-block:: bash
 
-   boulder examples/cantera/combustor.yaml --no-open
+   boulder examples/combustor.yaml --no-open
 
 Piston reactor with heat transfer
 ---------------------------------
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor2.py`
 :Status: **generated**
-:STONE: ``examples/cantera/reactor2.yaml``
+:STONE: ``examples/reactor2.yaml``
 :Mechanism: ``gri30.yaml``
 
 Transient advance-grid example. Wall heat-transfer coefficients are only partially captured in STONE; plots focus on reactor temperature evolution.
@@ -39,14 +41,14 @@ Codespaces launch:
 
 .. code-block:: bash
 
-   boulder examples/cantera/reactor2.yaml --no-open
+   boulder examples/reactor2.yaml --no-open
 
 Nanosecond pulse discharge
 --------------------------
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/nanosecond_pulse_discharge.py`
 :Status: **adapted**
-:STONE: ``examples/cantera/nanosecond_pulse_discharge.yaml``
+:STONE: ``examples/nanosecond_pulse_discharge.yaml``
 :Mechanism: ``example_data/methane-plasma-pavan-2023.yaml``
 
 Plasma micro-step example with Gaussian reduced-electric-field signal.
@@ -58,14 +60,14 @@ Codespaces launch:
 
 .. code-block:: bash
 
-   boulder examples/cantera/nanosecond_pulse_discharge.yaml --no-open
+   boulder examples/nanosecond_pulse_discharge.yaml --no-open
 
 Mixer with two inlet streams
 ----------------------------
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/mix1.py`
 :Status: **generated**
-:STONE: ``examples/cantera/mix1.yaml``
+:STONE: ``examples/mix1.yaml``
 :Mechanism: ``gri30.yaml``
 
 Dual-mechanism steady mixer with MFC and valve connections.
@@ -77,17 +79,17 @@ Codespaces launch:
 
 .. code-block:: bash
 
-   boulder examples/cantera/mix1.yaml --no-open
+   boulder examples/mix1.yaml --no-open
 
 Constant-pressure ignition
 --------------------------
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor1.py`
-:Status: **generated**
-:STONE: ``examples/cantera/reactor1.yaml``
+:Status: **adapted**
+:STONE: ``examples/reactor1.yaml``
 :Mechanism: ``h2o2.yaml``
 
-Single IdealGasConstPressureReactor with temperature advance limit.
+Single IdealGasConstPressureReactor with temperature advance limit and advance_grid transient integration.
 
 .. image:: /_static/screenshots/reactor1.png
    :width: 100%
@@ -96,14 +98,14 @@ Codespaces launch:
 
 .. code-block:: bash
 
-   boulder examples/cantera/reactor1.yaml --no-open
+   boulder examples/reactor1.yaml --no-open
 
 Periodic CSTR
 -------------
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/periodic_cstr.py`
 :Status: **adapted**
-:STONE: ``examples/cantera/periodic_cstr.yaml``
+:STONE: ``examples/periodic_cstr.yaml``
 :Mechanism: ``h2o2.yaml``
 
 CSTR with MFC, valve, and heat-transfer wall.
@@ -115,14 +117,14 @@ Codespaces launch:
 
 .. code-block:: bash
 
-   boulder examples/cantera/periodic_cstr.yaml --no-open
+   boulder examples/periodic_cstr.yaml --no-open
 
 Fuel injection with Gaussian pulse
 ----------------------------------
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/fuel_injection.py`
 :Status: **adapted**
-:STONE: ``examples/cantera/fuel_injection.yaml``
+:STONE: ``examples/fuel_injection.yaml``
 :Mechanism: ``nDodecane_Reitz.yaml``
 
 Transient fuel pulse; Gaussian MFC signal when AST detection succeeds.
@@ -134,7 +136,7 @@ Codespaces launch:
 
 .. code-block:: bash
 
-   boulder examples/cantera/fuel_injection.yaml --no-open
+   boulder examples/fuel_injection.yaml --no-open
 
 Preconditioned single-reactor integration
 -----------------------------------------

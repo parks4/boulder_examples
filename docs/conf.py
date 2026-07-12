@@ -21,7 +21,13 @@ version = release
 
 extensions = [
     "myst_parser",
+    "sphinx.ext.intersphinx",
 ]
+
+intersphinx_mapping = {
+    "boulder": ("https://parks4.github.io/boulder/", None),
+    "cantera": ("https://cantera.org/stable/", None),
+}
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]

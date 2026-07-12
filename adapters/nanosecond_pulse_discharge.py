@@ -23,11 +23,12 @@ r = ct.ConstPressureReactor(gas, energy="off", clone=False)
 sim = ct.ReactorNet([r])
 sim.verbose = False
 
+t_total = 90e-9
+dt_max = 1e-10
+dt_chunk = 1e-9
+
 # Preserve upstream micro-step structure for sim2stone AST (not executed).
 if False:  # pragma: no cover - pattern reference for sim2stone_ast
-    t_total = 90e-9
-    dt_max = 1e-10
-    dt_chunk = 1e-9
     t = 0.0
     while t < t_total:
         t_end = min(t + dt_chunk, t_total)

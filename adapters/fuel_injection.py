@@ -25,8 +25,10 @@ def fuel_mdot(total_mass=3.0e-3, std_dev=0.5, center_time=2.0):
 ct.MassFlowController(inlet, r, mdot=fuel_mdot())
 sim = ct.ReactorNet([r])
 
+tfinal = 10.0
+
 if False:  # pragma: no cover - transient stepping pattern
-    tfinal = 10.0
     tnow = 0.0
+    dt = 0.01
     while tnow < tfinal:
-        tnow = sim.step()
+        tnow = sim.advance(tnow + dt)

@@ -1,4 +1,4 @@
-upstream:
+﻿upstream:
   repository: https://github.com/Cantera/cantera
   path: samples/python/reactors
   ref: main
@@ -14,9 +14,8 @@ examples:
     status: generated
     upstream_file: combustor.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/combustor.py
-    stone_yaml: examples/cantera/combustor.yaml
+    stone_yaml: examples/combustor.yaml
     mechanism: gri30.yaml
-    plot_reactor: combustor
     screenshot: docs/_static/screenshots/combustor.png
     notes: >-
       Steady-state WSR with residence-time MFC closure and continuation solver.
@@ -27,9 +26,8 @@ examples:
     status: generated
     upstream_file: reactor2.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor2.py
-    stone_yaml: examples/cantera/reactor2.yaml
+    stone_yaml: examples/reactor2.yaml
     mechanism: gri30.yaml
-    plot_reactor: reactor
     screenshot: docs/_static/screenshots/reactor2.png
     notes: >-
       Transient advance-grid example. Wall heat-transfer coefficients are only
@@ -42,34 +40,37 @@ examples:
     adapter_file: adapters/nanosecond_pulse_discharge.py
     upstream_url: >-
       https://github.com/Cantera/cantera/blob/main/samples/python/reactors/nanosecond_pulse_discharge.py
-    stone_yaml: examples/cantera/nanosecond_pulse_discharge.yaml
+    stone_yaml: examples/nanosecond_pulse_discharge.yaml
     mechanism: example_data/methane-plasma-pavan-2023.yaml
-    plot_reactor: reactor
     screenshot: docs/_static/screenshots/nanosecond_pulse_discharge.png
     notes: >-
       Plasma micro-step example with Gaussian reduced-electric-field signal.
 
   - id: mix1
     title: Mixer with two inlet streams
-    status: generated
+    status: adapted
     upstream_file: mix1.py
+    adapter_file: adapters/mix1.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/mix1.py
-    stone_yaml: examples/cantera/mix1.yaml
+    stone_yaml: examples/mix1.yaml
     mechanism: gri30.yaml
-    plot_reactor: mixer
     screenshot: docs/_static/screenshots/mix1.png
-    notes: Dual-mechanism steady mixer with MFC and valve connections.
+    notes: >-
+      Dual-mechanism steady mixer with MFC and valve; uses solve_steady and
+      OutletSink for the downstream boundary.
 
   - id: reactor1
     title: Constant-pressure ignition
-    status: generated
+    status: adapted
     upstream_file: reactor1.py
+    adapter_file: adapters/reactor1.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor1.py
-    stone_yaml: examples/cantera/reactor1.yaml
+    stone_yaml: examples/reactor1.yaml
     mechanism: h2o2.yaml
-    plot_reactor: reactor
     screenshot: docs/_static/screenshots/reactor1.png
-    notes: Single IdealGasConstPressureReactor with temperature advance limit.
+    notes: >-
+      Single IdealGasConstPressureReactor with temperature advance limit and
+      advance_grid transient integration.
 
   - id: periodic_cstr
     title: Periodic CSTR
@@ -77,9 +78,8 @@ examples:
     upstream_file: periodic_cstr.py
     adapter_file: adapters/periodic_cstr.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/periodic_cstr.py
-    stone_yaml: examples/cantera/periodic_cstr.yaml
+    stone_yaml: examples/periodic_cstr.yaml
     mechanism: h2o2.yaml
-    plot_reactor: cstr
     screenshot: docs/_static/screenshots/periodic_cstr.png
     notes: CSTR with MFC, valve, and heat-transfer wall.
 
@@ -89,9 +89,8 @@ examples:
     upstream_file: fuel_injection.py
     adapter_file: adapters/fuel_injection.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/fuel_injection.py
-    stone_yaml: examples/cantera/fuel_injection.yaml
+    stone_yaml: examples/fuel_injection.yaml
     mechanism: nDodecane_Reitz.yaml
-    plot_reactor: combustor
     screenshot: docs/_static/screenshots/fuel_injection.png
     notes: Transient fuel pulse; Gaussian MFC signal when AST detection succeeds.
 

@@ -21,6 +21,10 @@ def main() -> int:
         f"Pinned upstream: ``{manifest['upstream']['repository']}`` "
         f"``{manifest['upstream']['path']}`` @ ``{manifest['upstream']['ref']}``.",
         "",
+        "See :doc:`boulder:stone` for the STONE YAML format and "
+        ":doc:`boulder:cantera_upstream_examples` for solver mapping from upstream "
+        "Cantera scripts. Networks are simulated with :class:`cantera.ReactorNet`.",
+        "",
     ]
     for entry in manifest["examples"]:
         lines.append(entry["title"])

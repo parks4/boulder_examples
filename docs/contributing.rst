@@ -9,7 +9,8 @@ Regenerating STONE YAML
 
       python scripts/download_upstream.py
 
-3. Regenerate runnable YAML files::
+3. Regenerate runnable YAML files with :doc:`sim2stone <boulder:usage>` (via
+   ``scripts/generate_examples.py``)::
 
       python scripts/generate_examples.py
 
@@ -17,18 +18,12 @@ Regenerating STONE YAML
 
       make test
 
-Refreshing GUI screenshots
---------------------------
+Generated YAML must conform to the :doc:`STONE format <boulder:stone>`. For solver
+mapping notes (``solve_steady``, ``advance_grid``, ``micro_step``, etc.) see
+:doc:`boulder:cantera_upstream_examples`.
 
-Screenshots are committed under ``docs/_static/screenshots/`` and embedded in the
-generated catalog page. They are captured **after** the network is solved and the
-**Plots** tab is selected in the Boulder GUI.
+See also
+--------
 
-::
-
-   pip install playwright
-   playwright install chromium
-   make screenshot
-
-Each screenshot should reproduce the upstream Cantera example curves as closely as the
-static STONE adaptation allows. Document any divergence in ``examples/manifest.yaml``.
+* :doc:`Boulder installation <boulder:installation>`
+* `Cantera install guide <https://cantera.org/stable/install/index.html>`__

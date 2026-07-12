@@ -1,4 +1,4 @@
-.PHONY: conda-env-update test docs-build qa screenshot refresh-manifest
+.PHONY: conda-env-update test docs-build qa refresh-manifest
 
 CONDA_ENV ?= boulder-examples
 
@@ -15,9 +15,6 @@ docs-build:
 qa:
 	ruff check .
 	ruff format --check .
-
-screenshot:
-	python scripts/capture_screenshots.py
 
 refresh-manifest:
 	python scripts/generate_examples.py

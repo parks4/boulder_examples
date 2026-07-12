@@ -8,10 +8,10 @@ Unsupported upstream samples are listed in the catalog with an explicit technica
 
 ## How examples are generated
 
-Runnable YAML files under `examples/cantera/` are produced with Boulder’s `sim2stone` tool:
+Runnable YAML files under `examples/` are produced with Boulder’s `sim2stone` tool:
 
 ```bash
-sim2stone upstream/cantera/reactors/<script>.py -o examples/cantera/<name>.yaml --mechanism <mech>
+sim2stone upstream/cantera/reactors/<script>.py -o examples/<name>.yaml --mechanism <mech>
 ```
 
 Or regenerate the whole runnable set:
@@ -35,13 +35,13 @@ make docs-build
 Launch an example in the GUI:
 
 ```bash
-boulder examples/cantera/combustor.yaml --no-open
+boulder examples/combustor.yaml --no-open
 ```
 
 Headless download of the generated Cantera Python script:
 
 ```bash
-boulder examples/cantera/reactor2.yaml --headless --download /tmp/reactor2.py
+boulder examples/reactor2.yaml --headless --download /tmp/reactor2.py
 python /tmp/reactor2.py
 ```
 
@@ -50,24 +50,15 @@ python /tmp/reactor2.py
 Open this repository in a Codespace (`.devcontainer/`) and run:
 
 ```bash
-boulder examples/cantera/<example>.yaml --no-open
+boulder examples/<example>.yaml --no-open
 ```
 
 The online docs at GitHub Pages include per-example Codespaces launch links.
 
 ## Documentation
 
-Sphinx docs live under `docs/`. Each runnable example page shows:
-
-- upstream provenance and adaptation notes
-- the STONE YAML
-- a post-solve Boulder GUI screenshot with the Plots panel visible
-
-Refresh screenshots after UI or example changes:
-
-```bash
-make screenshot
-```
+Sphinx docs live under `docs/`. The catalog lists upstream provenance, adaptation
+notes, and Codespaces launch commands for each example.
 
 ## Testing
 
@@ -80,5 +71,5 @@ Integration tests assert that every runnable YAML validates and that Boulder’s
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Vendored Cantera samples are BSD-licensed; see
-[LICENSES/Cantera.txt](LICENSES/Cantera.txt).
+MIT — see [LICENSE](LICENSE). Vendored Cantera samples remain under their upstream
+BSD-3-Clause license in the `upstream/` tree.
