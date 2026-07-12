@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Conda / env
+.ci-combined-environment.yml
+*.log
+
+# Docs build
+docs/_build/
+docs/.doctrees/
+
+# Runtime artifacts from examples
+*.csv
+.boulder-cache/
+examples/**/.boulder-cache/
+piston.csv
+surf_pfr_output.csv
+surf_pfr2_output.csv
+pfr_T_z.png
+pfr_XH2_t.png
+T.png
+plasma-density
+*_scenarios.h5
+
+# Screenshots (local capture tooling; assets may still be committed under docs/)
+.playwright/
+screenshots-tmp/
+scripts/capture_screenshots.py
+
+# IDE
+.vscode/
+.idea/
+*.swp

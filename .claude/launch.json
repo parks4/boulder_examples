@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "boulder-continuous-reactor",
+      "runtimeExecutable": "C:\\Users\\ErwanPannier\\miniconda3\\envs\\boulder\\python.exe",
+      "runtimeArgs": ["-m", "boulder.cli", "examples/continuous_reactor.yaml", "--no-open"],
+      "port": 8050
+    }
+  ]
+}

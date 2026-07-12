@@ -1,0 +1,21 @@
+name: boulder-examples
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - cantera
+  - numpy>=2.4.0
+  - pandas
+  - h5py
+  - matplotlib
+  - make
+  - myst-parser
+  - pydata-sphinx-theme
+  - pytest
+  - pytest-cov
+  - ruff
+  - sphinx
+  - pip:
+      - -r requirements.txt
+      - -r requirements-dev.txt
