@@ -165,7 +165,7 @@ Preconditioned single-reactor integration
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/preconditioned_integration.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/preconditioned_integration.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/preconditioned_integration.html <https://cantera.org/dev/examples/python/reactors/preconditioned_integration.html>`_
 :Status: **unsupported**
-:Reason: Requires example_data/n-heptane-NUIG-2016.yaml, which is not bundled in the Cantera 3.2 conda distribution used by Boulder CI.
+:Reason: Compares integration wall-clock time with vs. without a sparse preconditioner across two full re-runs of the same network -- a solver-performance A/B benchmark, not a single network solve, so it has no STONE representation (same class of issue as preconditioned_network below). The n-heptane-NUIG-2016.yaml mechanism it needs is already vendored under upstream/cantera/example_data/.
 
 1D packed bed (DAE)
 -------------------
