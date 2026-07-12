@@ -32,6 +32,7 @@ pfr_T_z.png
 pfr_XH2_t.png
 T.png
 plasma-density
+*_scenarios.h5
 
 # Screenshots (local capture tooling; assets may still be committed under docs/)
 .playwright/

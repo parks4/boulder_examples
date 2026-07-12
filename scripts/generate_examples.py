@@ -27,6 +27,7 @@ _GENERATED: list[tuple[str, Path, str, str | None]] = [
     ("reactor1", ADAPTER_DIR / "reactor1.py", "h2o2.yaml", "sim"),
     ("periodic_cstr", ADAPTER_DIR / "periodic_cstr.py", "h2o2.yaml", None),
     ("fuel_injection", ADAPTER_DIR / "fuel_injection.py", "nDodecane_Reitz.yaml", None),
+    ("continuous_reactor", ADAPTER_DIR / "continuous_reactor.py", "gri30.yaml", None),
 ]
 
 
@@ -72,6 +73,10 @@ def _cantera_env() -> dict[str, str]:
     if example.is_dir():
         parts.append(str(example))
     parts.append(str(base))
+    # Vendored mechanisms missing from the conda distribution (e.g.
+    # n-heptane-NUIG-2016.yaml) — parent of upstream/cantera/example_data/ so
+    # the upstream scripts' "example_data/<name>.yaml" relative path resolves.
+    parts.append(str(REPO_ROOT / "upstream" / "cantera"))
     prev = os.environ.get("CANTERA_DATA", "").strip()
     if prev:
         parts.append(prev)
@@ -102,6 +107,22 @@ def _postprocess_body(example_id: str, body: str) -> str:
             r"-\n# derived_via: ast_match\n  id: gaussian_EN\n  Gaussian:\n    peak: \1\n    center: \2\n    fwhm: \3",
             body,
         )
+    if example_id == "continuous_reactor":
+        body = body.replace(
+            "    closure: residence_time\n    tau_s: '{{residence_time}}'",
+            "    closure: residence_time\n    tau_s: 2.0",
+        )
+        # Boulder's default solver.atol (1e-8) is too loose for this
+        # IdealGasMoleReactor's absolute mole scale (~1e-5 m3 volume): the
+        # advance_grid replay drifts to a wrong composition (or, in the
+        # standalone downloaded script, hits CVODES step-underflow). A
+        # tighter atol/rtol — same knob STONE_SPECIFICATIONS.md itself
+        # documents for exactly this purpose — reproduces the correct
+        # converged composition exactly.
+        body = body.replace(
+            "  solver:\n    kind: advance_grid\n    grid:\n",
+            "  solver:\n    kind: advance_grid\n    atol: 1.0e-15\n    rtol: 1.0e-9\n    grid:\n",
+        )
     if example_id == "fuel_injection":
         body = body.replace(
             "phases:\n  gas:\n    mechanism: nDodecane_Reitz.yaml\n",
@@ -119,6 +140,14 @@ def main() -> int:
     os.environ.update(_cantera_env())
     os.environ.setdefault("MPLBACKEND", "Agg")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Cantera reads CANTERA_DATA once at first use (already triggered above by
+    # ``import cantera`` inside ``_cantera_env()``), so the env var update above
+    # has no effect in-process; register the vendored mechanism directory
+    # directly via the runtime API instead.
+    import cantera as ct
+
+    ct.add_directory(str(REPO_ROOT / "upstream" / "cantera"))
 
     from boulder.sim2stone_cli import main as sim2stone_main
 

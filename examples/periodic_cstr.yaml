@@ -4,7 +4,14 @@
 phases:
   gas:
     mechanism: h2o2.yaml
-settings: {}
+settings:
+# derived_via: ast_match
+  solver:
+    kind: advance_grid
+    grid:
+      start: 0.0
+      stop: 300.0
+      dt: 0.6
 
 network:
 - id: IdealGasReactor_0

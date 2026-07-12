@@ -66,11 +66,11 @@ Mixer with two inlet streams
 ----------------------------
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/mix1.py`
-:Status: **generated**
+:Status: **adapted**
 :STONE: ``examples/mix1.yaml``
 :Mechanism: ``gri30.yaml``
 
-Dual-mechanism steady mixer with MFC and valve connections.
+Dual-mechanism steady mixer with MFC and valve; uses solve_steady and OutletSink for the downstream boundary.
 
 .. image:: /_static/screenshots/mix1.png
    :width: 100%
@@ -163,8 +163,20 @@ Continuous reactor temperature sweep
 ------------------------------------
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/continuous_reactor.py`
-:Status: **unsupported**
-:Reason: Outer temperature sweep and time-varying residence time are not one static STONE file.
+:Status: **adapted**
+:STONE: ``examples/continuous_reactor.yaml``
+:Mechanism: ``gri30.yaml``
+
+The outer temperature sweep is not one static STONE file (STONE's inline sweep:/scenario: blocks can't drive two nodes — inlet reservoir and reactor initial state — from one swept value), so the base YAML is the CSTR topology at the 925 K baseline point and run_sweep.py (a host-provided sweep runner Boulder's /api/sweep invokes) independently solves the other ten upstream temperatures to steady state, writing them to the Scenario pane's store. Mechanism substituted: upstream's example_data/n-heptane-NUIG-2016.yaml (1268 species) is not bundled in Boulder CI's Cantera distribution and is also impractically slow to clone through Boulder's per-node solve pipeline; this repo vendors it under upstream/cantera/example_data/ for provenance, but the shipped example uses the bundled gri30.yaml (CH4/O2/N2) — same CSTR topology and sweep methodology, CH4/CO/O2 in place of NC7H16/CO/O2.
+
+.. image:: /_static/screenshots/continuous_reactor.png
+   :width: 100%
+
+Codespaces launch:
+
+.. code-block:: bash
+
+   boulder examples/continuous_reactor.yaml --no-open
 
 Custom SciPy ODE
 ----------------
