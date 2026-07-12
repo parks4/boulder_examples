@@ -48,16 +48,11 @@ def _config_for(entry: dict) -> dict:
             "context": "../..",
         },
         "forwardPorts": [PORT],
-        "postCreateCommand": (
-            f"conda env update -n {CONDA_ENV} -f environment.yml --prune"
-        ),
+        "postCreateCommand": (f"conda env update -n {CONDA_ENV} -f environment.yml --prune"),
         "postAttachCommand": (
-            f"conda run -n {CONDA_ENV} boulder examples/{example_id}.yaml "
-            f"--host 0.0.0.0 --no-open"
+            f"conda run -n {CONDA_ENV} boulder examples/{example_id}.yaml --host 0.0.0.0 --no-open"
         ),
-        "remoteEnv": {
-            "PATH": f"/opt/conda/envs/{CONDA_ENV}/bin:${{containerEnv:PATH}}"
-        },
+        "remoteEnv": {"PATH": f"/opt/conda/envs/{CONDA_ENV}/bin:${{containerEnv:PATH}}"},
         "portsAttributes": {
             str(PORT): {
                 "label": f"Boulder - {title}",
