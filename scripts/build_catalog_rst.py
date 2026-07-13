@@ -17,6 +17,12 @@ MANIFEST = REPO_ROOT / "examples" / "manifest.yaml"
 OUTPUT = REPO_ROOT / "docs" / "catalog.rst"
 
 
+def _cantera_docs_url(upstream_file: str) -> str:
+    """Return the rendered cantera.org example page for one upstream script."""
+    stem = Path(upstream_file).stem
+    return f"https://cantera.org/dev/examples/python/reactors/{stem}.html"
+
+
 def main() -> int:
     """Write the Sphinx catalog page."""
     manifest = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
@@ -36,7 +42,9 @@ def main() -> int:
         lines.append(entry["title"])
         lines.append("-" * len(entry["title"]))
         lines.append("")
-        lines.append(f":Upstream: `{entry['upstream_url']}`")
+        lines.append(f":Upstream: `{entry['upstream_url']} <{entry['upstream_url']}>`_")
+        cantera_docs_url = _cantera_docs_url(entry["upstream_file"])
+        lines.append(f":Cantera docs: `{cantera_docs_url} <{cantera_docs_url}>`_")
         lines.append(f":Status: **{entry['status']}**")
         if entry["status"] == "unsupported":
             lines.append(f":Reason: {entry['unsupported_reason']}")

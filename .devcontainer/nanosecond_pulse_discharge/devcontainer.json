@@ -7,8 +7,11 @@
   "forwardPorts": [
     8050
   ],
-  "postCreateCommand": "conda env update -n boulder-examples -f environment.yml --prune",
-  "postAttachCommand": "conda run -n boulder-examples boulder examples/nanosecond_pulse_discharge.yaml --host 0.0.0.0 --no-open",
+  "postCreateCommand": "conda env update -n boulder -f environment.yml --prune",
+  "postAttachCommand": "conda run -n boulder boulder examples/nanosecond_pulse_discharge.yaml --host 0.0.0.0 --no-open",
+  "remoteEnv": {
+    "PATH": "/opt/conda/envs/boulder/bin:${containerEnv:PATH}"
+  },
   "portsAttributes": {
     "8050": {
       "label": "Boulder - Nanosecond pulse discharge",

@@ -26,8 +26,8 @@ Cantera commit recorded in [`examples/manifest.yaml`](examples/manifest.yaml).
 ## Quick start (Conda)
 
 ```bash
-conda env create -n boulder-examples -f environment.yml
-conda activate boulder-examples
+conda env create -n boulder -f environment.yml
+conda activate boulder
 make test
 make docs-build
 ```

@@ -1,6 +1,6 @@
 .PHONY: conda-env-update test docs-build qa refresh-manifest
 
-CONDA_ENV ?= boulder-examples
+CONDA_ENV ?= boulder
 
 conda-env-update:
 	conda env update -n $(CONDA_ENV) -f environment.yml --prune

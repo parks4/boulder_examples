@@ -5,7 +5,10 @@
     "context": ".."
   },
   "forwardPorts": [8050],
-  "postCreateCommand": "conda env update -n boulder-examples -f environment.yml --prune",
+  "postCreateCommand": "conda env update -n boulder -f environment.yml --prune",
+  "remoteEnv": {
+    "PATH": "/opt/conda/envs/boulder/bin:${containerEnv:PATH}"
+  },
   "customizations": {
     "vscode": {
       "extensions": [

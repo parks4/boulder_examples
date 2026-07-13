@@ -1,4 +1,4 @@
-name: boulder-examples
+name: boulder
 channels:
   - conda-forge
 dependencies:
@@ -9,6 +9,8 @@ dependencies:
   - pandas
   - h5py
   - matplotlib
+  - graphviz          # dot, neato, … (Graphviz system binaries) — Boulder's Network tab
+  - python-graphviz   # Python bindings; uses dot from the graphviz package above
   - make
   - myst-parser
   - pydata-sphinx-theme
