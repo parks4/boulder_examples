@@ -45,6 +45,16 @@ examples:
     screenshot: docs/_static/screenshots/nanosecond_pulse_discharge.png
     notes: >-
       Plasma micro-step example with Gaussian reduced-electric-field signal.
+      Upstream runs with energy: "on" so plasma heating feeds back into gas
+      temperature and accelerates the discharge; this adapter uses energy:
+      "off" because Cantera 3.2's PlasmaPhase has no cp_mole() implementation,
+      so energy: "on" raises "NotImplementedError: PlasmaPhase::cp_mole" the
+      moment the reactor's energy equation needs a heat capacity. Without that
+      thermal feedback the discharge never reaches upstream's self-sustaining
+      avalanche regime, so temperature and product-species mole fractions stay
+      many orders of magnitude below upstream's plot -- a genuine, currently
+      open Cantera limitation (not a Boulder conversion defect). Re-check once
+      PlasmaPhase::cp_mole is implemented upstream.
 
   - id: mix1
     title: Mixer with two inlet streams
