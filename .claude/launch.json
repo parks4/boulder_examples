@@ -4,7 +4,37 @@
     {
       "name": "boulder-continuous-reactor",
       "runtimeExecutable": "C:\\Users\\ErwanPannier\\miniconda3\\envs\\boulder\\python.exe",
-      "runtimeArgs": ["-m", "boulder.cli", "examples/continuous_reactor.yaml", "--no-open"],
+      "runtimeArgs": ["-m", "boulder.cli", "examples/continuous_reactor.yaml", "--no-open", "--host", "0.0.0.0", "--port", "8050"],
+      "port": 8050
+    },
+    {
+      "name": "boulder-fuel-injection",
+      "runtimeExecutable": "C:\\Users\\ErwanPannier\\miniconda3\\envs\\boulder\\python.exe",
+      "runtimeArgs": ["-m", "boulder.cli", "examples/fuel_injection.yaml", "--no-open", "--host", "0.0.0.0", "--port", "8050"],
+      "port": 8050
+    },
+    {
+      "name": "boulder-reactor2",
+      "runtimeExecutable": "C:\\Users\\ErwanPannier\\miniconda3\\envs\\boulder\\python.exe",
+      "runtimeArgs": ["-m", "boulder.cli", "examples/reactor2.yaml", "--no-open", "--host", "0.0.0.0", "--port", "8050"],
+      "port": 8050
+    },
+    {
+      "name": "boulder-nanosecond-pulse-discharge",
+      "runtimeExecutable": "C:\\Users\\ErwanPannier\\miniconda3\\envs\\boulder\\python.exe",
+      "runtimeArgs": ["-m", "boulder.cli", "examples/nanosecond_pulse_discharge.yaml", "--no-open", "--host", "0.0.0.0", "--port", "8050"],
+      "port": 8050
+    },
+    {
+      "name": "boulder-periodic-cstr",
+      "runtimeExecutable": "C:\\Users\\ErwanPannier\\miniconda3\\envs\\boulder\\python.exe",
+      "runtimeArgs": ["-m", "boulder.cli", "examples/periodic_cstr.yaml", "--no-open", "--host", "0.0.0.0", "--port", "8050"],
+      "port": 8050
+    },
+    {
+      "name": "boulder-combustor",
+      "runtimeExecutable": "C:\\Users\\ErwanPannier\\miniconda3\\envs\\boulder\\python.exe",
+      "runtimeArgs": ["-m", "boulder.cli", "examples/combustor.yaml", "--no-open", "--host", "0.0.0.0", "--port", "8050"],
       "port": 8050
     }
   ]
