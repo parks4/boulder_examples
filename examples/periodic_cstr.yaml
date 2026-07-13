@@ -12,7 +12,7 @@ settings:
     grid:
       start: 0.0
       stop: 300.0
-      dt: 0.6
+      dt: 0.1
 
 network:
 - id: IdealGasReactor_0
@@ -49,7 +49,7 @@ network:
   target: Reservoir_2
 - id: Wall_0
   Wall:
-    heat_transfer_coeff: 0.02
     area: 1.0
+    heat_transfer_coeff: 0.02
   source: IdealGasReactor_0
   target: Reservoir_0

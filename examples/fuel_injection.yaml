@@ -10,6 +10,15 @@ settings:
     kind: advance_grid
     grid: {start: 0.0, stop: 10.0, dt: 0.01}
 
+signals:
+-
+# derived_via: ast_match
+  id: fuel_gaussian
+  Gaussian:
+    peak: 0.0023936536824085966
+    center: 2.0
+    fwhm: 1.1774100225154747
+
 network:
 - id: IdealGasReactor_0
   IdealGasReactor:
@@ -25,6 +34,11 @@ network:
     composition: c12h26:1
 - id: MassFlowController_0
   MassFlowController:
-    mass_flow_rate: 8.029813545893137e-07 kg/s
+    mass_flow_rate:
+      func: Gaussian
+      args:
+      - 0.0023936536824085966
+      - 2.0
+      - 1.1774100225154747
   source: Reservoir_0
   target: IdealGasReactor_0
