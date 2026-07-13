@@ -11,27 +11,41 @@ codespaces:
 examples:
   - id: combustor
     title: Steady combustor residence time
-    status: generated
+    status: adapted
     upstream_file: combustor.py
+    adapter_file: adapters/combustor.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/combustor.py
     stone_yaml: examples/combustor.yaml
     mechanism: gri30.yaml
     screenshot: docs/_static/screenshots/combustor.png
+    run_sweep_file: examples/run_sweep.py
     notes: >-
-      Steady-state WSR with residence-time MFC closure and continuation solver.
-      Boulder Plots should show heat-release and temperature versus residence time.
+      Upstream sweeps residence time down from 0.1 s in 0.9x steps until the
+      combustor extinguishes (T <= 500 K) -- an exploratory stop condition,
+      not a fixed value list, so it can't be expressed as a static
+      sweep:/scenario: block. The base YAML is the single steady solve at the
+      0.1 s reference point (solver.kind: solve_steady, with a
+      closure: residence_time MFC), and run_sweep.py (a host-provided sweep
+      runner Boulder's /api/sweep invokes) reproduces the full extinction
+      sweep, writing one scenario per residence time to the Scenario pane's
+      store with residence_time_s/final_temperature_K/heat_release_rate_w_m3
+      attrs -- pick Residence Time S / Heat Release Rate in the Sweep results
+      pane's axis selectors for the same plot upstream's script produces.
 
   - id: reactor2
     title: Piston reactor with heat transfer
-    status: generated
+    status: adapted
     upstream_file: reactor2.py
+    adapter_file: adapters/reactor2.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor2.py
     stone_yaml: examples/reactor2.yaml
     mechanism: gri30.yaml
     screenshot: docs/_static/screenshots/reactor2.png
     notes: >-
-      Transient advance-grid example. Wall heat-transfer coefficients are only
-      partially captured in STONE; plots focus on reactor temperature evolution.
+      Transient advance-grid example. The piston wall's expansion_rate_coeff
+      (K) and heat_transfer_coeff (U) are both captured in STONE, so Boulder
+      reproduces upstream's pressure-driven piston motion and heat exchange
+      together; plots focus on reactor temperature and pressure evolution.
 
   - id: nanosecond_pulse_discharge
     title: Nanosecond pulse discharge
