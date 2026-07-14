@@ -10,11 +10,11 @@ Steady combustor residence time
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/combustor.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/combustor.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/combustor.html <https://cantera.org/dev/examples/python/reactors/combustor.html>`_
-:Status: **generated**
+:Status: **adapted**
 :STONE: ``examples/combustor.yaml``
 :Mechanism: ``gri30.yaml``
 
-Steady-state WSR with residence-time MFC closure and continuation solver. Boulder Plots should show heat-release and temperature versus residence time.
+Upstream sweeps residence time down from 0.1 s in 0.9x steps until the combustor extinguishes (T <= 500 K) -- an exploratory stop condition, not a fixed value list, so it can't be expressed as a static sweep:/scenario: block. The base YAML is the single steady solve at the 0.1 s reference point (solver.kind: solve_steady, with a closure: residence_time MFC), and run_sweep.py (a host-provided sweep runner Boulder's /api/sweep invokes) reproduces the full extinction sweep, writing one scenario per residence time to the Scenario pane's store with residence_time_s/final_temperature_K/heat_release_rate_w_m3 attrs -- pick Residence Time S / Heat Release Rate in the Sweep results pane's axis selectors for the same plot upstream's script produces.
 
 .. image:: /_static/screenshots/combustor.png
    :width: 100%
@@ -32,11 +32,11 @@ Piston reactor with heat transfer
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor2.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor2.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/reactor2.html <https://cantera.org/dev/examples/python/reactors/reactor2.html>`_
-:Status: **generated**
+:Status: **adapted**
 :STONE: ``examples/reactor2.yaml``
 :Mechanism: ``gri30.yaml``
 
-Transient advance-grid example. Wall heat-transfer coefficients are only partially captured in STONE; plots focus on reactor temperature evolution.
+Transient advance-grid example. The piston wall's expansion_rate_coeff (K) and heat_transfer_coeff (U) are both captured in STONE, so Boulder reproduces upstream's pressure-driven piston motion and heat exchange together; plots focus on reactor temperature and pressure evolution.
 
 .. image:: /_static/screenshots/reactor2.png
    :width: 100%
@@ -58,7 +58,7 @@ Nanosecond pulse discharge
 :STONE: ``examples/nanosecond_pulse_discharge.yaml``
 :Mechanism: ``example_data/methane-plasma-pavan-2023.yaml``
 
-Plasma micro-step example with Gaussian reduced-electric-field signal.
+Plasma micro-step example with Gaussian reduced-electric-field signal. Upstream runs with energy: "on" so plasma heating feeds back into gas temperature and accelerates the discharge; this adapter uses energy: "off" because Cantera 3.2's PlasmaPhase has no cp_mole() implementation, so energy: "on" raises "NotImplementedError: PlasmaPhase::cp_mole" the moment the reactor's energy equation needs a heat capacity. Without that thermal feedback the discharge never reaches upstream's self-sustaining avalanche regime, so temperature and product-species mole fractions stay many orders of magnitude below upstream's plot -- a genuine, currently open Cantera limitation (not a Boulder conversion defect). Re-check once PlasmaPhase::cp_mole is implemented upstream.
 
 .. image:: /_static/screenshots/nanosecond_pulse_discharge.png
    :width: 100%

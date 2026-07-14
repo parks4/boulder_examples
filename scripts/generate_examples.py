@@ -16,7 +16,7 @@ OUTPUT_DIR = REPO_ROOT / "examples"
 # (id, source script relative to repo root, default mechanism, reactor_net var)
 _GENERATED: list[tuple[str, Path, str, str | None]] = [
     ("combustor", ADAPTER_DIR / "combustor.py", "gri30.yaml", "sim"),
-    ("reactor2", UPSTREAM_DIR / "reactor2.py", "gri30.yaml", None),
+    ("reactor2", ADAPTER_DIR / "reactor2.py", "gri30.yaml", None),
     (
         "nanosecond_pulse_discharge",
         ADAPTER_DIR / "nanosecond_pulse_discharge.py",

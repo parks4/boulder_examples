@@ -6,9 +6,22 @@ phases:
   gas:
     mechanism: nDodecane_Reitz.yaml#nDodecane_IG
 settings:
+# derived_via: ast_match
   solver:
     kind: advance_grid
-    grid: {start: 0.0, stop: 10.0, dt: 0.01}
+    grid:
+      start: 0.0
+      stop: 10.0
+      dt: 0.01
+
+signals:
+-
+# derived_via: ast_match
+  id: fuel_gaussian
+  Gaussian:
+    peak: 0.0023936536824085966
+    center: 2.0
+    fwhm: 1.1774100225154747
 
 network:
 - id: IdealGasReactor_0
@@ -18,6 +31,7 @@ network:
       temperature: 999.9999999999998 K
       pressure: 2026499.9999999893 Pa
       composition: n2:0.772803,o2:0.143873,h2o:0.0433285,co2:0.0399956,oh:3.04156e-08,ho2:6.77475e-10,h2o2:1.94192e-10,o:1.31951e-11,h2:2.20934e-12,co:1.41333e-12
+  mechanism: nDodecane_Reitz.yaml#nDodecane_IG
 - id: Reservoir_0
   Reservoir:
     temperature: 300.0 K
@@ -25,6 +39,11 @@ network:
     composition: c12h26:1
 - id: MassFlowController_0
   MassFlowController:
-    mass_flow_rate: 8.029813545893137e-07 kg/s
+    mass_flow_rate:
+      func: Gaussian
+      args:
+      - 0.0023936536824085966
+      - 2.0
+      - 1.1774100225154747
   source: Reservoir_0
   target: IdealGasReactor_0
