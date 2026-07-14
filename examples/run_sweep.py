@@ -82,7 +82,24 @@ def _cr_solve_one_temperature(reactor_temperature: float, inlet_X: dict) -> ct.S
     # solve_steady() converges cleanly from this already-close warm-started
     # state (see adapters/continuous_reactor.py for why advance_to_steady_state
     # is avoided) and pins down the exact steady point for the KPI attrs below.
-    net.solve_steady()
+    # Right at this system's low/high-temperature extinction boundary, the
+    # long transient march's exact trajectory is numerically sensitive
+    # (BLAS/OpenMP thread-count differences between environments perturb
+    # floating-point rounding over thousands of adaptive steps), and that can
+    # occasionally leave solve_steady() unable to converge from this
+    # particular warm start (observed via the GUI's subprocess invocation,
+    # not the plain CLI one -- same script, different thread-count
+    # environment). The already-integrated t=50s transient endpoint is
+    # itself an excellent approximation of steady state, so fall back to it
+    # rather than aborting the whole sweep over one scenario.
+    try:
+        net.solve_steady()
+    except ct.CanteraError as exc:
+        print(
+            f"[warn] solve_steady() did not converge at T={reactor_temperature} K "
+            f"({exc}); using the transient endpoint at t={_CR_MAX_SIMULATION_TIME_S}s instead.",
+            flush=True,
+        )
     history.append(reactor.phase.state, t=_CR_MAX_SIMULATION_TIME_S)
     return history
 

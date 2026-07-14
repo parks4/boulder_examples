@@ -32,6 +32,9 @@ network:
       pressure: 2026499.9999999893 Pa
       composition: n2:0.772803,o2:0.143873,h2o:0.0433285,co2:0.0399956,oh:3.04156e-08,ho2:6.77475e-10,h2o2:1.94192e-10,o:1.31951e-11,h2:2.20934e-12,co:1.41333e-12
   mechanism: nDodecane_Reitz.yaml#nDodecane_IG
+  plot_options:
+    hide_species: [n2]
+    show_species: [A1c2h, A1c2h3, A1, A2, A2r5, A3, A4]
 - id: Reservoir_0
   Reservoir:
     temperature: 300.0 K

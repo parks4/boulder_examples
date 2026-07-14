@@ -181,7 +181,7 @@ Preconditioned single-reactor integration
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/1D_pfr_surfchem.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/1D_pfr_surfchem.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/1D_pfr_surfchem.html <https://cantera.org/dev/examples/python/reactors/1D_pfr_surfchem.html>`_
 :Status: **unsupported**
-:Reason: Uses FlowReactor and spatial surface chemistry not supported by Boulder.
+:Reason: Uses FlowReactor and spatial surface chemistry, not supported by Boulder today. Design sketch for adding this reactor family: https://github.com/parks4/boulder/blob/main/docs/plans/2026-07-14-flow-reactor-support.md
 
 Continuous reactor temperature sweep
 ------------------------------------
@@ -250,8 +250,22 @@ Moving piston with velocity wall
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/piston.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/piston.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/piston.html <https://cantera.org/dev/examples/python/reactors/piston.html>`_
-:Status: **unsupported**
-:Reason: Wall velocity callable and dual-mechanism piston dynamics are not captured in STONE.
+:Status: **adapted**
+:STONE: ``examples/piston.yaml``
+:Mechanism: ``gri30.yaml``
+
+Dual-mechanism piston (h2o2.yaml left / gri30.yaml right) driven purely by a Wall velocity callable -- no expansion_rate_coeff/heat_transfer_coeff at all. Wall velocity Func1s (Cantera 3.0+) always read back as the evaluated float at the network's current time (same limitation as MassFlowController.mass_flow_rate), so sim2stone recovers the closure from source via AST detection instead: a ``{closure: pressure_proportional, coeff, start_time}`` spec matching upstream's ``def v(t): if t < 0.1: return 0.0 else: return (r1.phase.P - r2.phase.P) * 1e-4``. Dual-mechanism itself needed no new work -- per-node mechanism overrides already existed (see reactor2.yaml).
+
+.. image:: /_static/screenshots/piston.png
+   :width: 100%
+
+`Launch in GitHub Codespaces <https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/piston/devcontainer.json&quickstart=1>`_ — opens this example running in Boulder, forwarded port opens in your browser.
+
+Or run locally:
+
+.. code-block:: bash
+
+   boulder examples/piston.yaml --no-open
 
 Isothermal plasma electron balance
 ----------------------------------
@@ -259,7 +273,7 @@ Isothermal plasma electron balance
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/plasma.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/plasma.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/plasma.html <https://cantera.org/dev/examples/python/reactors/plasma.html>`_
 :Status: **unsupported**
-:Reason: No ReactorNet; SciPy ODE for electron density.
+:Reason: No ReactorNet; SciPy ODE for electron density directly. Not representable as a static STONE network, but this class of custom-ODE model can be implemented in Boulder today via a plugin using boulder.CustomStageNetwork (https://parks4.github.io/boulder/_api/boulder/index.html#boulder.CustomStageNetwork), see the "Extending Boulder with plugins" section of usage.rst (https://github.com/parks4/boulder/blob/main/docs/usage.rst#extending-boulder-with-plugins).
 
 Porous media burner cascade
 ---------------------------
@@ -291,7 +305,7 @@ Surface PFR (FlowReactor)
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/surf_pfr.html <https://cantera.org/dev/examples/python/reactors/surf_pfr.html>`_
 :Status: **unsupported**
-:Reason: FlowReactor and FlowReactorSurface are unsupported in Boulder.
+:Reason: FlowReactor and FlowReactorSurface are unsupported in Boulder today. Design sketch for adding this reactor family: https://github.com/parks4/boulder/blob/main/docs/plans/2026-07-14-flow-reactor-support.md
 
 Surface PFR chain
 -----------------
@@ -299,5 +313,5 @@ Surface PFR chain
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr_chain.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr_chain.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/surf_pfr_chain.html <https://cantera.org/dev/examples/python/reactors/surf_pfr_chain.html>`_
 :Status: **unsupported**
-:Reason: Repeated steady march with ReactorSurface chain is an algorithm, not static STONE.
+:Reason: Repeated steady march with a ReactorSurface chain is an algorithm, not static STONE, and additionally depends on the same FlowReactor/ FlowReactorSurface support tracked in https://github.com/parks4/boulder/blob/main/docs/plans/2026-07-14-flow-reactor-support.md
 
