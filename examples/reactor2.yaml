@@ -35,6 +35,12 @@ network:
       temperature: 500.0 K
       pressure: 20264.999999999996 Pa
       composition: N2:0.708098,O2:0.188324,CH4:0.103578
+- id: External Wall
+  Wall:
+    area: 1.0
+    heat_transfer_coeff: 500.0
+  source: Reacting partition
+  target: Environment
 - id: Piston
   Wall:
     area: 1.0
@@ -42,9 +48,3 @@ network:
     expansion_rate_coeff: 5e-05
   source: Reacting partition
   target: Argon partition
-- id: External Wall
-  Wall:
-    area: 1.0
-    heat_transfer_coeff: 500.0
-  source: Reacting partition
-  target: Environment
