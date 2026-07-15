@@ -13,6 +13,8 @@ settings:
     chunk_dt: 1e-09
     max_dt: 1e-10
     reinitialize_between_chunks: true
+    atol: 1.0e-15
+    rtol: 1.0e-9
 
 signals:
 -
@@ -34,7 +36,11 @@ network:
   ConstPressureReactor:
     volume: 1.0
     energy: "off"
+    clone: false
     initial:
       temperature: 300.0 K
       pressure: 101325.00000000003 Pa
       composition: N2:0.715,O2:0.19,CH4:0.095,e:1e-11
+  plot_options:
+    hide_species: [N2, O2, CH4]
+    show_species: [e, O2+, N2+, H2O+, CH4+, O, "N2(A)", "N2(B)", "N2(C)", "N2(a')", CH3, CO2, CO, H2O, H, OH]

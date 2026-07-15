@@ -143,7 +143,10 @@ examples:
     status: unsupported
     upstream_file: 1D_pfr_surfchem.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/1D_pfr_surfchem.py
-    unsupported_reason: Uses FlowReactor and spatial surface chemistry not supported by Boulder.
+    unsupported_reason: >-
+      Uses FlowReactor and spatial surface chemistry, not supported by Boulder
+      today. Design sketch for adding this reactor family:
+      https://github.com/parks4/boulder/blob/main/docs/plans/2026-07-14-flow-reactor-support.md
   - id: continuous_reactor
     title: Continuous reactor temperature sweep
     status: adapted
@@ -200,16 +203,37 @@ examples:
     unsupported_reason: Multiple ReactorNet objects and chain/Lagrangian algorithms are not one static YAML.
   - id: piston
     title: Moving piston with velocity wall
-    status: unsupported
+    status: adapted
     upstream_file: piston.py
+    adapter_file: adapters/piston.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/piston.py
-    unsupported_reason: Wall velocity callable and dual-mechanism piston dynamics are not captured in STONE.
+    stone_yaml: examples/piston.yaml
+    mechanism: gri30.yaml
+    screenshot: docs/_static/screenshots/piston.png
+    notes: >-
+      Dual-mechanism piston (h2o2.yaml left / gri30.yaml right) driven purely
+      by a Wall velocity callable -- no expansion_rate_coeff/heat_transfer_coeff
+      at all. Wall velocity Func1s (Cantera 3.0+) always read back as the
+      evaluated float at the network's current time (same limitation as
+      MassFlowController.mass_flow_rate), so sim2stone recovers the closure
+      from source via AST detection instead: a
+      ``{closure: pressure_proportional, coeff, start_time}`` spec matching
+      upstream's ``def v(t): if t < 0.1: return 0.0 else: return
+      (r1.phase.P - r2.phase.P) * 1e-4``. Dual-mechanism itself needed no new
+      work -- per-node mechanism overrides already existed (see reactor2.yaml).
   - id: plasma
     title: Isothermal plasma electron balance
     status: unsupported
     upstream_file: plasma.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/plasma.py
-    unsupported_reason: No ReactorNet; SciPy ODE for electron density.
+    unsupported_reason: >-
+      No ReactorNet; SciPy ODE for electron density directly. Not representable
+      as a static STONE network, but this class of custom-ODE model can be
+      implemented in Boulder today via a plugin using
+      boulder.CustomStageNetwork
+      (https://parks4.github.io/boulder/_api/boulder/index.html#boulder.CustomStageNetwork),
+      see the "Extending Boulder with plugins" section of usage.rst
+      (https://github.com/parks4/boulder/blob/main/docs/usage.rst#extending-boulder-with-plugins).
   - id: porous_media_burner
     title: Porous media burner cascade
     status: unsupported
@@ -233,10 +257,17 @@ examples:
     status: unsupported
     upstream_file: surf_pfr.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr.py
-    unsupported_reason: FlowReactor and FlowReactorSurface are unsupported in Boulder.
+    unsupported_reason: >-
+      FlowReactor and FlowReactorSurface are unsupported in Boulder today.
+      Design sketch for adding this reactor family:
+      https://github.com/parks4/boulder/blob/main/docs/plans/2026-07-14-flow-reactor-support.md
   - id: surf_pfr_chain
     title: Surface PFR chain
     status: unsupported
     upstream_file: surf_pfr_chain.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr_chain.py
-    unsupported_reason: Repeated steady march with ReactorSurface chain is an algorithm, not static STONE.
+    unsupported_reason: >-
+      Repeated steady march with a ReactorSurface chain is an algorithm, not
+      static STONE, and additionally depends on the same FlowReactor/
+      FlowReactorSurface support tracked in
+      https://github.com/parks4/boulder/blob/main/docs/plans/2026-07-14-flow-reactor-support.md

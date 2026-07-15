@@ -28,6 +28,7 @@ _GENERATED: list[tuple[str, Path, str, str | None]] = [
     ("periodic_cstr", ADAPTER_DIR / "periodic_cstr.py", "h2o2.yaml", None),
     ("fuel_injection", ADAPTER_DIR / "fuel_injection.py", "nDodecane_Reitz.yaml", None),
     ("continuous_reactor", ADAPTER_DIR / "continuous_reactor.py", "gri30.yaml", None),
+    ("piston", ADAPTER_DIR / "piston.py", "gri30.yaml", None),
 ]
 
 
@@ -110,6 +111,32 @@ def _postprocess_body(example_id: str, body: str) -> str:
             r"    peak: \1\n    center: \2\n    fwhm: \3",
             body,
         )
+        # Boulder's default solver.atol (1e-8) treats the electron/ion mole
+        # fractions this plasma pulse actually drives (~1e-11 to ~1e-8) as
+        # "within tolerance" noise, so CVODES never resolves the ionization
+        # at all -- the whole pulse silently integrates as a no-op. A much
+        # tighter atol/rtol (same knob already used for continuous_reactor
+        # below, and documented in STONE_SPECIFICATIONS.md for exactly this
+        # purpose) reproduces the correct several-orders-of-magnitude growth
+        # in e/O2+/N2+/etc. seen in the vendored upstream script.
+        body = body.replace(
+            "    reinitialize_between_chunks: true\n",
+            "    reinitialize_between_chunks: true\n    atol: 1.0e-15\n    rtol: 1.0e-9\n",
+        )
+        # N2/O2/CH4 dominate by mole fraction and crowd out the plasma
+        # chemistry the example is actually about; force the reaction
+        # intermediates/charged species into the chart instead (see
+        # https://cantera.org/dev/examples/python/reactors/plasma_ignition.html
+        # -style plots, which plot exactly this species set).
+        body = re.sub(
+            r"(- id: ConstPressureReactor_0\n(?:.+\n)+?      composition: [^\n]+\n)",
+            r"\1"
+            "  plot_options:\n"
+            "    hide_species: [N2, O2, CH4]\n"
+            '    show_species: [e, O2+, N2+, H2O+, CH4+, O, "N2(A)", '
+            '"N2(B)", "N2(C)", "N2(a\')", CH3, CO2, CO, H2O, H, OH]\n',
+            body,
+        )
     if example_id == "continuous_reactor":
         body = body.replace(
             "    closure: residence_time\n    tau_s: '{{residence_time}}'",
@@ -134,6 +161,16 @@ def _postprocess_body(example_id: str, body: str) -> str:
         body = body.replace(
             "settings: {}\n",
             "settings:\n  solver:\n    kind: advance_grid\n    grid: {start: 0.0, stop: 10.0, dt: 0.01}\n",
+        )
+        # n2 dominates the mixture by mole fraction and crowds out the PAH
+        # soot-precursor chemistry the example is actually about; force those
+        # species into the chart instead.
+        body = re.sub(
+            r"(- id: IdealGasReactor_0\n(?:.+\n)+?  mechanism: [^\n]+\n)",
+            r"\1  plot_options:\n"
+            r"    hide_species: [n2]\n"
+            r"    show_species: [A1c2h, A1c2h3, A1, A2, A2r5, A3, A4]\n",
+            body,
         )
     return body
 
