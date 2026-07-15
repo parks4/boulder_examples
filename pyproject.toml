@@ -13,6 +13,10 @@ dependencies = [
   "boulder>=0.6.3",
   "cantera>=3.0.0",
   "PyYAML>=6.0",
+  # boulder's own PyPI wheel imports pandas (boulder/ctutils.py) without
+  # declaring it as a dependency -- only its conda environment.yml has it.
+  # Declared here so `pip install boulder-examples` doesn't crash on import.
+  "pandas",
 ]
 
 [tool.setuptools.packages.find]
