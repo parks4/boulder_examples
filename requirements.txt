@@ -1,1 +1,1 @@
-boulder==0.7.0
+boulder==0.7.1
