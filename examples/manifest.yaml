@@ -144,9 +144,12 @@ examples:
     upstream_file: 1D_pfr_surfchem.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/1D_pfr_surfchem.py
     unsupported_reason: >-
-      Uses FlowReactor and spatial surface chemistry, not supported by Boulder
-      today. Design sketch for adding this reactor family:
-      https://github.com/parks4/boulder/blob/main/docs/plans/2026-07-14-flow-reactor-support.md
+      Uses FlowReactor + ReactorSurface, now supported by Boulder (see
+      surf_pfr below and https://github.com/parks4/boulder/pull/112) --
+      not yet adapted here: this script's mechanism (SiF4_NH3_mec.yaml,
+      silicon nitride deposition) and matplotlib-only diagnostics
+      (deposition rate, surface site fractions) need their own STONE mapping,
+      tracked separately from surf_pfr's simpler single-species-output case.
   - id: continuous_reactor
     title: Continuous reactor temperature sweep
     status: adapted
@@ -254,20 +257,36 @@ examples:
     unsupported_reason: ReactorNet sensitivity API is not represented in STONE.
   - id: surf_pfr
     title: Surface PFR (FlowReactor)
-    status: unsupported
+    status: adapted
     upstream_file: surf_pfr.py
+    adapter_file: adapters/surf_pfr.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr.py
-    unsupported_reason: >-
-      FlowReactor and FlowReactorSurface are unsupported in Boulder today.
-      Design sketch for adding this reactor family:
-      https://github.com/parks4/boulder/blob/main/docs/plans/2026-07-14-flow-reactor-support.md
+    stone_yaml: examples/surf_pfr.yaml
+    mechanism: methane_pox_on_pt.yaml
+    screenshot: docs/_static/screenshots/surf_pfr.png
+    notes: >-
+      Real distance-marched ct.FlowReactor + ct.ReactorSurface (catalytic
+      methane partial oxidation over Pt), not a chain-of-CSTRs approximation
+      -- solved via solver.axis: distance (parks4/boulder#112). The adapter
+      stops before the distance-marching loop (kept under `if False:`, same
+      convention as piston.py's stepping guard) so sim2stone captures the
+      true inlet state instead of the fully-converted outlet state.
+      FlowReactor.mass_flow_rate is write-only in the Cantera 3.2 Python API;
+      sim2stone recovers it from continuity (density x speed x area) instead
+      of a direct read. Known gap: download_script_emitter.py doesn't support
+      FlowReactor yet (a separate reactor-dispatch pathway from
+      create_reactor_from_node), so the --download native-script test is
+      skipped for this example -- YAML validation, normalization, and the
+      real DualCanteraConverter solve all work correctly.
   - id: surf_pfr_chain
     title: Surface PFR chain
     status: unsupported
     upstream_file: surf_pfr_chain.py
     upstream_url: https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr_chain.py
     unsupported_reason: >-
-      Repeated steady march with a ReactorSurface chain is an algorithm, not
-      static STONE, and additionally depends on the same FlowReactor/
-      FlowReactorSurface support tracked in
-      https://github.com/parks4/boulder/blob/main/docs/plans/2026-07-14-flow-reactor-support.md
+      Repeated steady march with a ReactorSurface chain (a chain-of-WSRs
+      approximation, as opposed to surf_pfr's real distance-marched
+      FlowReactor, now supported -- see https://github.com/parks4/boulder/pull/112)
+      is an algorithm, not static STONE: it re-solves the same WSR to steady
+      state once per chain link, carrying the converged state forward as the
+      next link's inlet. Out of scope for a single STONE description.
