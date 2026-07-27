@@ -29,6 +29,7 @@ _GENERATED: list[tuple[str, Path, str, str | None]] = [
     ("fuel_injection", ADAPTER_DIR / "fuel_injection.py", "nDodecane_Reitz.yaml", None),
     ("continuous_reactor", ADAPTER_DIR / "continuous_reactor.py", "gri30.yaml", None),
     ("piston", ADAPTER_DIR / "piston.py", "gri30.yaml", None),
+    ("surf_pfr", ADAPTER_DIR / "surf_pfr.py", "methane_pox_on_pt.yaml", None),
 ]
 
 

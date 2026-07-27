@@ -181,7 +181,7 @@ Preconditioned single-reactor integration
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/1D_pfr_surfchem.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/1D_pfr_surfchem.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/1D_pfr_surfchem.html <https://cantera.org/dev/examples/python/reactors/1D_pfr_surfchem.html>`_
 :Status: **unsupported**
-:Reason: Uses FlowReactor and spatial surface chemistry, not supported by Boulder today. Design sketch for adding this reactor family: https://github.com/parks4/boulder/blob/main/docs/plans/2026-07-14-flow-reactor-support.md
+:Reason: Uses FlowReactor + ReactorSurface, now supported by Boulder (see surf_pfr below and https://github.com/parks4/boulder/pull/112) -- not yet adapted here: this script's mechanism (SiF4_NH3_mec.yaml, silicon nitride deposition) and matplotlib-only diagnostics (deposition rate, surface site fractions) need their own STONE mapping, tracked separately from surf_pfr's simpler single-species-output case.
 
 Continuous reactor temperature sweep
 ------------------------------------
@@ -304,8 +304,22 @@ Surface PFR (FlowReactor)
 
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/surf_pfr.html <https://cantera.org/dev/examples/python/reactors/surf_pfr.html>`_
-:Status: **unsupported**
-:Reason: FlowReactor and FlowReactorSurface are unsupported in Boulder today. Design sketch for adding this reactor family: https://github.com/parks4/boulder/blob/main/docs/plans/2026-07-14-flow-reactor-support.md
+:Status: **adapted**
+:STONE: ``examples/surf_pfr.yaml``
+:Mechanism: ``methane_pox_on_pt.yaml``
+
+Real distance-marched ct.FlowReactor + ct.ReactorSurface (catalytic methane partial oxidation over Pt), not a chain-of-CSTRs approximation -- solved via solver.axis: distance (parks4/boulder#112). The adapter stops before the distance-marching loop (kept under `if False:`, same convention as piston.py's stepping guard) so sim2stone captures the true inlet state instead of the fully-converted outlet state. FlowReactor.mass_flow_rate is write-only in the Cantera 3.2 Python API; sim2stone recovers it from continuity (density x speed x area) instead of a direct read. Known gap: download_script_emitter.py doesn't support FlowReactor yet (a separate reactor-dispatch pathway from create_reactor_from_node), so the --download native-script test is skipped for this example -- YAML validation, normalization, and the real DualCanteraConverter solve all work correctly.
+
+.. image:: /_static/screenshots/surf_pfr.png
+   :width: 100%
+
+`Launch in GitHub Codespaces <https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/surf_pfr/devcontainer.json&quickstart=1>`_ — opens this example running in Boulder, forwarded port opens in your browser.
+
+Or run locally:
+
+.. code-block:: bash
+
+   boulder examples/surf_pfr.yaml --no-open
 
 Surface PFR chain
 -----------------
@@ -313,5 +327,5 @@ Surface PFR chain
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr_chain.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr_chain.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/surf_pfr_chain.html <https://cantera.org/dev/examples/python/reactors/surf_pfr_chain.html>`_
 :Status: **unsupported**
-:Reason: Repeated steady march with a ReactorSurface chain is an algorithm, not static STONE, and additionally depends on the same FlowReactor/ FlowReactorSurface support tracked in https://github.com/parks4/boulder/blob/main/docs/plans/2026-07-14-flow-reactor-support.md
+:Reason: Repeated steady march with a ReactorSurface chain (a chain-of-WSRs approximation, as opposed to surf_pfr's real distance-marched FlowReactor, now supported -- see https://github.com/parks4/boulder/pull/112) is an algorithm, not static STONE: it re-solves the same WSR to steady state once per chain link, carrying the converged state forward as the next link's inlet. Out of scope for a single STONE description.
 

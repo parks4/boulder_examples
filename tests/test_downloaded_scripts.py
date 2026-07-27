@@ -36,6 +36,13 @@ _SKIP_DOWNLOAD: set[str] = {
     # Headless codegen/solve limitations with multi-mechanism or real-gas phases.
     "mix1",
     "fuel_injection",
+    # download_script_emitter.py doesn't support FlowReactor/FlowReactorSurface
+    # yet (a separate, hardcoded reactor-dispatch pathway from
+    # create_reactor_from_node) -- documented as a known gap in
+    # parks4/boulder#112. YAML validation, normalization, and the real
+    # DualCanteraConverter solve all work; only native --download codegen
+    # doesn't.
+    "surf_pfr",
 }
 
 

@@ -36,6 +36,12 @@
       "runtimeExecutable": "C:\\Users\\ErwanPannier\\miniconda3\\envs\\boulder\\python.exe",
       "runtimeArgs": ["-m", "boulder.cli", "examples/combustor.yaml", "--no-open", "--host", "0.0.0.0", "--port", "8050"],
       "port": 8050
+    },
+    {
+      "name": "boulder-surf-pfr",
+      "runtimeExecutable": "C:\\Users\\ErwanPannier\\AppData\\Local\\Temp\\boulder_flowreactor_venv\\Scripts\\python.exe",
+      "runtimeArgs": ["-m", "boulder.cli", "examples/surf_pfr.yaml", "--no-open", "--host", "127.0.0.1", "--port", "8062"],
+      "port": 8062
     }
   ]
 }

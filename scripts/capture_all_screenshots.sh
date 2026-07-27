@@ -17,7 +17,7 @@ VENV_PY="${BOULDER_PYTHON:?Set BOULDER_PYTHON to a clean venv/conda python (no t
 OUT_DIR="docs/_static/screenshots"
 PORT="${BOULDER_SCREENSHOT_PORT:-8061}"
 
-EXAMPLES="combustor reactor2 nanosecond_pulse_discharge mix1 reactor1 periodic_cstr fuel_injection continuous_reactor piston"
+EXAMPLES="combustor reactor2 nanosecond_pulse_discharge mix1 reactor1 periodic_cstr fuel_injection continuous_reactor piston surf_pfr"
 
 # Per-example capture_screenshot.py args -- most examples use the plain
 # default (run + select first node + Plots tab); a few need a specific node,
