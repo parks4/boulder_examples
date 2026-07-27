@@ -10,9 +10,10 @@ Usage: python scripts/capture_screenshot.py <url> <output_png> [options]
 Modes (--mode):
   plots (default) -- run the single-shot simulation, select a reactor node
     (first node, or --node <id> for a specific one), click the Plots tab.
-  network -- run the single-shot simulation and screenshot as-is; the
-    reactor network diagram is always visible above the tab strip, so no
-    tab click is needed.
+  network -- run the single-shot simulation and click the Network tab (the
+    Graphviz-rendered flow diagram with per-stream T/P/composition tables --
+    richer than the permanently-visible Cytoscape topology diagram above the
+    tab strip, and the point of this mode).
   sweep -- trigger a parameter sweep via the Run-control split button's
     "Run Sweep" mode, wait for it to finish, and screenshot the page (the
     Sweep Results chart renders in the right-hand Scenario pane). Use
@@ -151,11 +152,9 @@ def main() -> int:
                 _select_node(page, args.node)
                 page.get_by_role("button", name="Plots").click()
                 page.wait_for_timeout(1500)
-            # "network" mode: the reactor topology diagram is a permanent
-            # element above the tab strip, always visible regardless of which
-            # tab is active -- no further action needed. (The "Network" tab
-            # itself is an unrelated Graphviz-rendered diagram that requires
-            # an optional dependency; not what this mode is after.)
+            elif args.mode == "network":
+                page.get_by_role("button", name="Network").click()
+                page.wait_for_timeout(1500)
 
         page.screenshot(path=args.output_png, full_page=True)
         browser.close()
