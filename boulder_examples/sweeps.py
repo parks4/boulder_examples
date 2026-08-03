@@ -50,18 +50,14 @@ _EXTINCTION_TEMPERATURE_K = 500.0
 _REACTOR_ID = "combustor"
 
 
-def _cr_solve_one_temperature(
-    reactor_temperature: float, inlet_X: Dict[str, float]
-) -> ct.SolutionArray:
+def _cr_solve_one_temperature(reactor_temperature: float, inlet_X: Dict[str, float]) -> ct.SolutionArray:
     """Build and solve the CSTR at one inlet temperature; return its trajectory."""
     gas = ct.Solution(_MECHANISM)
     gas.TPX = reactor_temperature, _CR_REACTOR_PRESSURE, inlet_X
 
     tank = ct.Reservoir(gas)
     exhaust = ct.Reservoir(gas)
-    reactor = ct.IdealGasMoleReactor(
-        gas, energy="off", volume=_CR_REACTOR_VOLUME_M3, name=_CR_REACTOR_ID
-    )
+    reactor = ct.IdealGasMoleReactor(gas, energy="off", volume=_CR_REACTOR_VOLUME_M3, name=_CR_REACTOR_ID)
 
     def mdot(t: float) -> float:
         return reactor.mass / _CR_RESIDENCE_TIME_S
@@ -134,9 +130,7 @@ def continuous_reactor(
         inlet_X = final_X  # warm-start the next point (see docstring)
 
         scenario_id = f"T0_{reactor_temperature}K"
-        scenario_kpis[scenario_id] = {
-            f"final_X_{sp}": float(final_X[sp]) for sp in _CR_KPI_SPECIES
-        }
+        scenario_kpis[scenario_id] = {f"final_X_{sp}": float(final_X[sp]) for sp in _CR_KPI_SPECIES}
         write_payload(
             store_path,
             gui_payload_from_solution_array(history, _CR_REACTOR_ID),
@@ -188,9 +182,7 @@ def _build_network():
         return combustor.mass / residence_time_box[0]
 
     inlet_mfc = ct.MassFlowController(inlet, combustor, mdot=mdot, name="air_inlet")
-    ct.PressureController(
-        combustor, exhaust, primary=inlet_mfc, K=0.01, name="outlet_pc"
-    )
+    ct.PressureController(combustor, exhaust, primary=inlet_mfc, K=0.01, name="outlet_pc")
 
     sim = ct.ReactorNet([combustor])
     return sim, combustor, gas_comb, residence_time_box
@@ -209,6 +201,7 @@ def combustor(
     progress :
         Optional ``(done, total, message)`` reporter supplied by Boulder, used
         to drive the Run Sweep status UI.
+
     """
     store_path = Path(store_path)
     sim, combustor_reactor, gas_comb, residence_time_box = _build_network()

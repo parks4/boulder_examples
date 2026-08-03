@@ -91,13 +91,11 @@ def test_runner_accepts_the_store_path_and_optional_progress(stem: str) -> None:
     positional: List[str] = [
         name
         for name, p in params.items()
-        if p.kind
-        in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        if p.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
         and p.default is inspect.Parameter.empty
     ]
     assert len(positional) == 1, (
-        f"{dotted} must take exactly one required positional argument (the "
-        f"store path); got {positional}"
+        f"{dotted} must take exactly one required positional argument (the store path); got {positional}"
     )
     if "progress" in params:
         assert params["progress"].default is not inspect.Parameter.empty, (
@@ -134,11 +132,7 @@ def test_store_carries_enough_numeric_attrs_to_plot(stem: str) -> None:
         groups = [k for k in handle.keys() if isinstance(handle[k], h5py.Group)]
         assert groups, "store has no scenario groups"
         attrs = handle[groups[0]].attrs
-        numeric = {
-            k
-            for k in attrs
-            if k not in bookkeeping and isinstance(attrs[k], (int, float))
-        }
+        numeric = {k for k in attrs if k not in bookkeeping and isinstance(attrs[k], (int, float))}
     assert len(numeric) >= 2, (
         f"{stem} scenarios expose {sorted(numeric)} -- the plot needs at least "
         "two numeric attrs to offer an X and a Y axis"
