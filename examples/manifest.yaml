@@ -18,19 +18,20 @@ examples:
     stone_yaml: examples/combustor.yaml
     mechanism: gri30.yaml
     screenshot: docs/_static/screenshots/combustor.png
-    run_sweep_file: examples/run_sweep.py
+    run_sweep_file: boulder_examples/sweeps.py
     notes: >-
       Upstream sweeps residence time down from 0.1 s in 0.9x steps until the
-      combustor extinguishes (T <= 500 K) -- an exploratory stop condition,
-      not a fixed value list, so it can't be expressed as a static
-      sweep:/scenario: block. The base YAML is the single steady solve at the
-      0.1 s reference point (solver.kind: solve_steady, with a
-      closure: residence_time MFC), and run_sweep.py (a host-provided sweep
-      runner Boulder's /api/sweep invokes) reproduces the full extinction
-      sweep, writing one scenario per residence time to the Scenario pane's
-      store with residence_time_s/final_temperature_K/heat_release_rate_w_m3
-      attrs -- pick Residence Time S / Heat Release Rate in the Sweep results
-      pane's axis selectors for the same plot upstream's script produces.
+      combustor extinguishes (T <= 500 K). The points must be solved
+      sequentially, each warm-started from the previous solve, because this
+      walks the combustor down its extinction branch -- re-solving each point
+      independently would find the ignited solution instead -- and the run-set
+      length is only known once extinction happens. Neither fits a declarative
+      axis, so the YAML declares
+      sweep.runner: boulder_examples.sweeps:combustor, which Boulder resolves
+      and calls in-process. It writes one scenario per residence time with
+      residence_time_s/final_temperature_K/heat_release_rate_w_m3 attrs --
+      pick Residence Time S / Heat Release Rate in the Sweep results pane's
+      axis selectors for the same plot upstream's script produces.
 
   - id: reactor2
     title: Piston reactor with heat transfer
@@ -159,15 +160,14 @@ examples:
     stone_yaml: examples/continuous_reactor.yaml
     mechanism: gri30.yaml
     screenshot: docs/_static/screenshots/continuous_reactor.png
-    run_sweep_file: examples/run_sweep.py
     notes: >-
-      The outer temperature sweep is not one static STONE file (STONE's inline
-      sweep:/scenario: blocks can't drive two nodes — inlet reservoir and
-      reactor initial state — from one swept value), so the base YAML is the
-      CSTR topology at the 925 K baseline point and run_sweep.py (a
-      host-provided sweep runner Boulder's /api/sweep invokes) independently
-      solves the other ten upstream temperatures to steady state, writing them
-      to the Scenario pane's store. Mechanism substituted: upstream's
+      The outer temperature sweep is declared inline. One swept value must
+      reach two nodes -- the feed reservoir and the reactor's own initial
+      state, since the reactor runs energy: "off" -- which a single-target
+      axis could not express; a multi-target sweep path: list drives them in
+      lockstep, so all eleven upstream temperatures run from the YAML with no
+      script. Boulder records each point's axis value as a t0_K scenario attr,
+      giving the Sweep results pane its X axis. Mechanism substituted: upstream's
       example_data/n-heptane-NUIG-2016.yaml (1268 species) is not bundled in
       Boulder CI's Cantera distribution and is also impractically slow to
       clone through Boulder's per-node solve pipeline; this repo vendors it

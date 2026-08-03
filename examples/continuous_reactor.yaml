@@ -47,3 +47,18 @@ network:
     pressure_coeff: 1e-06
   source: stirred_reactor
   target: exhaust
+
+# Inlet-temperature sweep (the eleven points of upstream continuous_reactor.py).
+#
+# A runner rather than a declarative sweep: upstream carries each point's
+# converged composition into the next, and that warm start is load bearing.
+# Solving each temperature independently from a fixed initial composition
+# leaves CVode a poor initial guess near the extinction boundary and the 825 K
+# point fails its error test outright.
+#
+# (Its other obstacle -- one swept value having to drive both the feed
+# reservoir and the reactor's own initial state, since the reactor runs
+# energy: "off" -- *is* expressible now with a multi-target sweep path: list,
+# but that alone does not survive the numerics above.)
+sweep:
+  runner: "boulder_examples.sweeps:continuous_reactor"

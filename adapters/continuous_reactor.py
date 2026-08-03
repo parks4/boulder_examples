@@ -8,8 +8,10 @@ adapter emits the *same topology and solver idiom* at the baseline temperature
 ``while t < max_simulation_time: t = reactor_network.step()`` march, which
 sim2stone's AST scan detects as ``advance_grid`` (same as an explicit
 ``.advance()`` loop, just with Cantera's own adaptive step size);
-``run_sweep.py`` builds and solves the other ten points independently and
-writes the scenario store the GUI's Scenario pane reads.
+the other ten points come from the YAML's own ``sweep:`` block, whose
+multi-target ``path:`` drives the feed reservoir and the reactor's initial
+state from one value (the reactor runs ``energy: "off"``, so they must move
+together). Run Sweep solves them into the store the Scenario pane reads.
 
 Mechanism note: upstream loads ``example_data/n-heptane-NUIG-2016.yaml``
 (1268 species / 5336 reactions). That mechanism is not bundled in the Cantera
