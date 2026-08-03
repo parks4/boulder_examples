@@ -25,8 +25,24 @@ import yaml
 
 EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
 
-#: Examples whose results are produced by a sweep and committed alongside them.
+#: Examples whose results are produced by a sweep.
 SWEEP_EXAMPLES = ["combustor", "continuous_reactor"]
+
+try:  # `sweep.runner` landed in parks4/boulder#139
+    from boulder.runset import sweep_runner_of
+except ImportError:  # pragma: no cover - depends on the installed boulder
+    sweep_runner_of = None  # type: ignore[assignment]
+
+#: The runner tests below need a Boulder that understands `sweep.runner`.
+#: They skip (loudly) rather than fail on an older pin, and switch themselves
+#: back on as soon as the pin moves -- the skip reason says exactly what to do.
+requires_runner_support = pytest.mark.skipif(
+    sweep_runner_of is None,
+    reason=(
+        "installed boulder predates sweep.runner (parks4/boulder#139); "
+        "bump the boulder pin in environment.yml once it is released"
+    ),
+)
 
 
 def _config(stem: str) -> dict:
@@ -45,11 +61,11 @@ def test_boulder_sees_a_runnable_run_set(stem: str) -> None:
     )
 
 
+@requires_runner_support
 @pytest.mark.parametrize("stem", SWEEP_EXAMPLES)
 def test_declared_sweep_runner_actually_resolves(stem: str) -> None:
     """A dotted path is only better than filename magic if it is checked."""
     from boulder.cantera_converter import resolve_dotted_path
-    from boulder.runset import sweep_runner_of
 
     dotted = sweep_runner_of(_config(stem))
     if dotted is None:
@@ -59,13 +75,13 @@ def test_declared_sweep_runner_actually_resolves(stem: str) -> None:
     assert callable(runner), f"{dotted} is not callable"
 
 
+@requires_runner_support
 @pytest.mark.parametrize("stem", SWEEP_EXAMPLES)
 def test_runner_accepts_the_store_path_and_optional_progress(stem: str) -> None:
     """Boulder calls ``runner(store)`` or ``runner(store, progress=...)``."""
     import inspect
 
     from boulder.cantera_converter import resolve_dotted_path
-    from boulder.runset import sweep_runner_of
 
     dotted = sweep_runner_of(_config(stem))
     if dotted is None:
