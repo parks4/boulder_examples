@@ -40,3 +40,12 @@ network:
     pressure_coeff: 0.01
   source: combustor
   target: exhaust
+
+# Extinction sweep: residence time shrinks by a fixed factor until the flame
+# blows out. The points must be solved sequentially -- each warm-started from
+# the previous solve -- because this walks the combustor down its extinction
+# branch; re-solving each point independently would find the ignited solution
+# instead. The run-set length is also only known once extinction happens, so no
+# declarative axis can express it. See STONE_SPECIFICATIONS.md "sweep.runner:".
+sweep:
+  runner: "boulder_examples.sweeps:combustor"
