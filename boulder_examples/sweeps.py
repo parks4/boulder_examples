@@ -16,20 +16,27 @@ the flame blows out. Two consequences make a declarative axis wrong here:
    answer.
 2. The number of points is only known once extinction happens.
 
-Boulder resolves ``sweep.runner`` and calls it in-process with the collection
-store path; this module writes scenarios into it with the same
-``write_payload`` any sweep uses.
+Boulder resolves ``sweep.runner`` and calls it in-process with the store
+**directory** (one HDF5 file per run-set entry) and the config path. Entries go
+in through :func:`boulder.scenario_store.write_entry`, which stamps the
+fingerprint, config identity and display attrs the Scenario pane checks before
+serving a result -- hand-rolled HDF5 produces entries the pane refuses.
+
+A runner's points are generated at runtime, not derived from the config, so
+there is no meaningful per-point fingerprint: every entry is stamped with the
+config's own, meaning "this run-set came from this config, unchanged".
 """
 
 from __future__ import annotations
 
-import time
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 import cantera as ct
-import h5py
-from boulder.payload_store import gui_payload_from_solution_array, write_payload
+from boulder import scenario_store
+from boulder.payload_store import gui_payload_from_solution_array
+from boulder.result_cache import compute_fingerprint
+from boulder.runner import BoulderRunner
 
 _CR_TEMPERATURES_K = [650, 700, 750, 775, 825, 850, 875, 925, 950, 1075, 1100]
 _CR_REACTOR_PRESSURE = ct.one_atm
@@ -48,6 +55,23 @@ _INITIAL_RESIDENCE_TIME_S = 0.1
 _RESIDENCE_TIME_DECAY = 0.9
 _EXTINCTION_TEMPERATURE_K = 500.0
 _REACTOR_ID = "combustor"
+
+
+def _store_stamp(config_path: "str | Path | None") -> Dict[str, str]:
+    """Return the ``fingerprint``/``identity`` every store entry must carry.
+
+    Both come from the config, not from the point: see this module's docstring
+    for why a runner-produced point has no fingerprint of its own.
+    """
+    if not config_path:
+        # No config to key against (a direct call, e.g. from a test): the pane
+        # will not serve these, which is the honest outcome.
+        return {"fingerprint": "", "identity": ""}
+    raw = BoulderRunner.load(str(config_path))
+    return {
+        "fingerprint": compute_fingerprint(raw, mechanism=_MECHANISM),
+        "identity": scenario_store.config_identity(str(config_path)),
+    }
 
 
 def _cr_solve_one_temperature(reactor_temperature: float, inlet_X: Dict[str, float]) -> ct.SolutionArray:
@@ -97,7 +121,8 @@ def _cr_solve_one_temperature(reactor_temperature: float, inlet_X: Dict[str, flo
 
 
 def continuous_reactor(
-    store_path: "str | Path",
+    store_dir: "str | Path",
+    config_path: "str | Path | None" = None,
     progress: Optional[Callable[..., None]] = None,
 ) -> None:
     """Sweep the CSTR's inlet temperature, warm-starting each point.
@@ -114,7 +139,8 @@ def continuous_reactor(
     a multi-target ``sweep`` ``path:`` list — see STONE_SPECIFICATIONS.md — but
     that alone does not survive the numerics above.)
     """
-    store_path = Path(store_path)
+    store_dir = Path(store_dir)
+    stamp = _store_stamp(config_path)
     total = len(_CR_TEMPERATURES_K)
     inlet_X: Dict[str, float] = dict(_CR_INLET_X)
     scenario_kpis: Dict[str, Dict[str, float]] = {}
@@ -131,33 +157,24 @@ def continuous_reactor(
 
         scenario_id = f"T0_{reactor_temperature}K"
         scenario_kpis[scenario_id] = {f"final_X_{sp}": float(final_X[sp]) for sp in _CR_KPI_SPECIES}
-        write_payload(
-            store_path,
-            gui_payload_from_solution_array(history, _CR_REACTOR_ID),
+        # `t0_K` is the swept input and the plot's default X axis; the
+        # `final_*` attrs are results.
+        scenario_store.write_entry(
+            store_dir,
+            scenario_id,
+            gui_payload=gui_payload_from_solution_array(history, _CR_REACTOR_ID),
             mechanism=_MECHANISM,
-            group=scenario_id,
-            fresh=(i == 1),
+            label=f"T = {reactor_temperature} K",
+            order=i,
+            extra_attrs={
+                "t0_K": float(reactor_temperature),
+                "final_temperature_K": float(reactor_temperature),
+                **scenario_kpis[scenario_id],
+            },
+            **stamp,
         )
 
-    with h5py.File(str(store_path), "r+") as handle:
-        handle.attrs["mechanism_name"] = _MECHANISM
-        handle.attrs["reactor_mode"] = "CSTR temperature sweep"
-        handle.attrs["created_at"] = time.time()
-        handle.attrs["cantera_version"] = ct.__version__
-        for i, reactor_temperature in enumerate(_CR_TEMPERATURES_K, start=1):
-            scenario_id = f"T0_{reactor_temperature}K"
-            grp = handle[scenario_id]
-            # `t0_K` is the swept input and the plot's default X axis; the
-            # `final_*` attrs are results.
-            grp.attrs["t0_K"] = float(reactor_temperature)
-            grp.attrs["final_temperature_K"] = float(reactor_temperature)
-            grp.attrs["label"] = f"T = {reactor_temperature} K"
-            grp.attrs["order"] = i
-            grp.attrs["computed_at"] = time.time()
-            for key, value in scenario_kpis[scenario_id].items():
-                grp.attrs[key] = value
-
-    print(f"Sweep complete — {total} scenario(s) written to {store_path.name}")
+    print(f"Sweep complete — {total} scenario(s) written to {store_dir.name}/")
 
 
 def _build_network():
@@ -189,21 +206,26 @@ def _build_network():
 
 
 def combustor(
-    store_path: "str | Path",
+    store_dir: "str | Path",
+    config_path: "str | Path | None" = None,
     progress: Optional[Callable[..., None]] = None,
 ) -> None:
     """Solve the combustor down to extinction, one scenario per point.
 
     Parameters
     ----------
-    store_path :
-        Collection store to write, resolved by Boulder from the config.
+    store_dir :
+        Result-store directory (one file per entry), resolved by Boulder.
+    config_path :
+        The config being swept, used to stamp entries so the Scenario pane
+        accepts them.
     progress :
         Optional ``(done, total, message)`` reporter supplied by Boulder, used
         to drive the Run Sweep status UI.
 
     """
-    store_path = Path(store_path)
+    store_dir = Path(store_dir)
+    stamp = _store_stamp(config_path)
     sim, combustor_reactor, gas_comb, residence_time_box = _build_network()
 
     # Solve every point first (a handful of cheap steady solves) so the true
@@ -235,28 +257,21 @@ def combustor(
 
         history = ct.SolutionArray(gas_comb, extra=["t"])
         history.append(point["state"], t=0.0)
-        write_payload(
-            store_path,
-            gui_payload_from_solution_array(history, _REACTOR_ID),
+        # KPI attrs: the numbers the Scenario pane's Sweep Results plot offers
+        # as axes. `residence_time_s` is the swept input, the others results.
+        scenario_store.write_entry(
+            store_dir,
+            f"tres_{i:03d}",
+            gui_payload=gui_payload_from_solution_array(history, _REACTOR_ID),
             mechanism=_MECHANISM,
-            group=f"tres_{i:03d}",
-            fresh=(i == 1),
+            label=f"tres = {point['residence_time_s']:.3e} s",
+            order=i,
+            extra_attrs={
+                "residence_time_s": point["residence_time_s"],
+                "final_temperature_K": point["final_temperature_K"],
+                "heat_release_rate_w_m3": point["heat_release_rate_w_m3"],
+            },
+            **stamp,
         )
 
-    # KPI attrs: the numbers the Scenario pane's Sweep Results plot offers as
-    # axes. `residence_time_s` is the swept input, the other two are results.
-    with h5py.File(str(store_path), "r+") as handle:
-        handle.attrs["mechanism_name"] = _MECHANISM
-        handle.attrs["reactor_mode"] = "Combustor residence-time sweep"
-        handle.attrs["created_at"] = time.time()
-        handle.attrs["cantera_version"] = ct.__version__
-        for i, point in enumerate(points, start=1):
-            grp = handle[f"tres_{i:03d}"]
-            grp.attrs["residence_time_s"] = point["residence_time_s"]
-            grp.attrs["final_temperature_K"] = point["final_temperature_K"]
-            grp.attrs["heat_release_rate_w_m3"] = point["heat_release_rate_w_m3"]
-            grp.attrs["label"] = f"tres = {point['residence_time_s']:.3e} s"
-            grp.attrs["order"] = i
-            grp.attrs["computed_at"] = time.time()
-
-    print(f"Sweep complete — {total} scenario(s) written to {store_path.name}")
+    print(f"Sweep complete — {total} scenario(s) written to {store_dir.name}/")
