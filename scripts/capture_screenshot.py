@@ -84,8 +84,7 @@ def _run_sweep(page: Page, sweep_series: list[str], sweep_x: str | None, skip_ru
     page.wait_for_timeout(2000)
 
     if sweep_x:
-        page.get_by_label("X axis").select_option(label=sweep_x)
-        page.wait_for_timeout(300)
+        _pick(page, "x-axis-select", sweep_x)
 
     if not sweep_series:
         return
@@ -99,10 +98,26 @@ def _run_sweep(page: Page, sweep_series: list[str], sweep_x: str | None, skip_ru
         remove_buttons.first.click()
         page.wait_for_timeout(150)
 
-    add_select = page.locator("select[data-testid='y-axis-add-select']")
     for series_label in sweep_series:
-        add_select.select_option(label=series_label)
-        page.wait_for_timeout(300)
+        _pick(page, "y-axis-add-select", series_label)
+
+
+def _pick(page: Page, test_id: str, label: str) -> None:
+    """Choose *label* in one of the Sweep results pane's axis pickers.
+
+    The pickers are Boulder's ``SearchableSelect`` (a ``role=combobox`` text
+    input that opens a listbox and fuzzy-filters it as you type), not native
+    ``<select>`` elements -- so drive them the way a user does: focus, type
+    the label, Enter picks the first (highlighted) match. Labels are matched
+    as typed, so "Heat Release Rate W M3" also finds "Heat Release Rate W M3
+    (output)".
+    """
+    box = page.get_by_test_id(test_id)
+    box.click()
+    box.fill(label)
+    page.wait_for_timeout(150)
+    box.press("Enter")
+    page.wait_for_timeout(400)
 
 
 def main() -> int:
