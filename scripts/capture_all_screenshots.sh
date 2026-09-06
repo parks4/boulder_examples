@@ -24,6 +24,12 @@ EXAMPLES="combustor reactor2 nanosecond_pulse_discharge mix1 reactor1 periodic_c
 # the network diagram only, or a parameter sweep instead. Populates the
 # global CAPTURE_ARGS array (not echoed -- an echoed string would lose
 # quoting on word-split re-expansion for args containing spaces).
+#
+# Guideline for any new sweep-mode example: --mode sweep already widens the
+# right-hand Scenario pane before capture (capture_screenshot.py's
+# _widen_scenario_pane) -- the default 250px pane crams the Sweep Results
+# chart and its X/Y axis pickers into a sliver. Nothing to add here for that;
+# it's only called out so a future recapture doesn't narrow it back by hand.
 capture_args() {
   case "$1" in
     combustor)

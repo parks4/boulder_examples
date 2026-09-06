@@ -18,7 +18,17 @@ Modes (--mode):
     "Run Sweep" mode, wait for it to finish, and screenshot the page (the
     Sweep Results chart renders in the right-hand Scenario pane). Use
     --sweep-series to pick specific series (comma-separated) in the sweep
-    plot's Y-axis picker instead of leaving the default selection.
+    plot's Y-axis picker instead of leaving the default selection. The right
+    (Scenario) pane is widened before capture -- see ``_widen_scenario_pane``
+    -- so the chart and its axis pickers aren't cramped into the default
+    250px pane width; this is the one guideline every sweep-mode screenshot
+    in this repo should follow, so a future example doesn't have to
+    rediscover it. Stays on the default Plots tab deliberately: a
+    ``sweep.runner``-produced scenario (both current sweep examples) only
+    ever populates ``reactors_series``/``times`` (see
+    ``boulder.payload_store.gui_payload_from_solution_array``) -- Thermo,
+    Summary and Sankey all render their own "no data" placeholder for it, so
+    switching off Plots would trade a tall screenshot for an empty one.
 """
 
 from __future__ import annotations
@@ -58,6 +68,50 @@ def _select_node(page: Page, node_id: str | None) -> None:
     page.wait_for_timeout(500)
 
 
+def _ensure_network_diagram_rendered(page: Page) -> None:
+    """Force Cytoscape to recompute its canvas size and redraw before capture.
+
+    The always-visible topology canvas above the tab strip lives right where
+    a sweep-mode capture stacks up several rapid layout changes -- the
+    Scenario pane mounting as a brand-new third column the instant the sweep
+    finishes, then the Sweep Results axis pickers being driven programmatically
+    right after. Cytoscape's own ResizeObserver-driven redraw does not
+    reliably keep up with that in a headless capture: the canvas has been
+    observed to come out blank, sized to whatever it was mid-flurry. Calling
+    ``resize()`` then ``fit()`` on the exposed ``window.__boulderCy`` instance
+    recomputes the container size and redraws unconditionally, so the
+    screenshot always shows the real topology regardless of what raced during
+    layout. Cheap and harmless to call for every mode, not just sweep.
+    """
+    page.evaluate("() => { const cy = window.__boulderCy; if (cy) { cy.resize(); cy.fit(); } }")
+    page.wait_for_timeout(300)
+
+
+def _widen_scenario_pane(page: Page) -> None:
+    """Preset the right (Scenario) pane wide before a sweep-mode capture.
+
+    Boulder persists pane widths in ``localStorage["boulder-layout"]``
+    (``{leftWidth, rightWidth, ...}``, see ``frontend/src/stores/
+    layoutStore.ts``), defaulting the right pane to 250px -- comfortable for
+    the plain Scenarios list, but too narrow for the Sweep Results chart and
+    its X/Y axis pickers once a sweep populates it (the axis dropdowns wrap
+    and the plot is squeezed to a sliver). Setting it up front (this
+    Playwright browser profile's own storage only -- never touched in the
+    app/repo) reproduces the wider layout used for every sweep screenshot
+    before it went undocumented and got lost to a narrower recapture.
+
+    600px, not wider: ``layoutStore.ts``'s own ``clampWidth`` caps the right
+    pane at ``MAX_WIDTH = 600`` on load regardless of what's stored here, so
+    600 is the actual ceiling -- a larger value would just get silently
+    clamped back down.
+
+    Must run *before* the app's first paint reads the key, hence
+    ``add_init_script`` (runs on every navigation in this page, ahead of the
+    page's own scripts) rather than a post-load ``page.evaluate``.
+    """
+    page.add_init_script("window.localStorage.setItem('boulder-layout', JSON.stringify({rightWidth: 600}))")
+
+
 def _run_sweep(page: Page, sweep_series: list[str], sweep_x: str | None, skip_run: bool) -> None:
     """Switch the split button to "Run Sweep", run it, and wait for results.
 
@@ -86,20 +140,18 @@ def _run_sweep(page: Page, sweep_series: list[str], sweep_x: str | None, skip_ru
     if sweep_x:
         _pick(page, "x-axis-select", sweep_x)
 
-    if not sweep_series:
-        return
+    if sweep_series:
+        # Replace the auto-selected default family with exactly the requested
+        # series: drop every active chip, then add the requested ones in order.
+        while True:
+            remove_buttons = page.locator("[data-testid^='remove-series-']")
+            if remove_buttons.count() == 0:
+                break
+            remove_buttons.first.click()
+            page.wait_for_timeout(150)
 
-    # Replace the auto-selected default family with exactly the requested
-    # series: drop every active chip, then add the requested ones in order.
-    while True:
-        remove_buttons = page.locator("[data-testid^='remove-series-']")
-        if remove_buttons.count() == 0:
-            break
-        remove_buttons.first.click()
-        page.wait_for_timeout(150)
-
-    for series_label in sweep_series:
-        _pick(page, "y-axis-add-select", series_label)
+        for series_label in sweep_series:
+            _pick(page, "y-axis-add-select", series_label)
 
 
 def _pick(page: Page, test_id: str, label: str) -> None:
@@ -146,6 +198,8 @@ def main() -> int:
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": 1440, "height": 1024})
+        if args.mode == "sweep":
+            _widen_scenario_pane(page)
         page.goto(args.url, wait_until="networkidle")
 
         if args.mode == "sweep":
@@ -171,6 +225,7 @@ def main() -> int:
                 page.get_by_role("button", name="Network").click()
                 page.wait_for_timeout(1500)
 
+        _ensure_network_diagram_rendered(page)
         page.screenshot(path=args.output_png, full_page=True)
         browser.close()
     print(f"wrote {args.output_png}")
