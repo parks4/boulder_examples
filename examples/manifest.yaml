@@ -27,7 +27,7 @@ examples:
       independently would find the ignited solution instead -- and the run-set
       length is only known once extinction happens. Neither fits a declarative
       axis, so the YAML declares
-      sweep.runner: boulder_examples.sweeps:combustor, which Boulder resolves
+      scenarios_sweep.runner: boulder_examples.sweeps:combustor, which Boulder resolves
       and calls in-process. It writes one scenario per residence time with
       residence_time_s/final_temperature_K/heat_release_rate_w_m3 attrs --
       pick Residence Time S / Heat Release Rate in the Sweep results pane's

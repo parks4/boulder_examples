@@ -70,6 +70,8 @@ One-click Codespaces launches — each opens this example running in Boulder; th
 - [Periodic CSTR](https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/periodic_cstr/devcontainer.json&quickstart=1)
 - [Fuel injection with Gaussian pulse](https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/fuel_injection/devcontainer.json&quickstart=1)
 - [Continuous reactor temperature sweep](https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/continuous_reactor/devcontainer.json&quickstart=1)
+- [Moving piston with velocity wall](https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/piston/devcontainer.json&quickstart=1)
+- [Surface PFR (FlowReactor)](https://codespaces.new/parks4/boulder_examples?devcontainer_path=.devcontainer/surf_pfr/devcontainer.json&quickstart=1)
 <!-- LAUNCH_LINKS:END -->
 
 ## Documentation
