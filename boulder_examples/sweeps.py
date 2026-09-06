@@ -1,6 +1,6 @@
-"""Host-produced run-sets, declared from a config's ``sweep.runner``.
+"""Host-produced run-sets, declared from a config's ``scenarios_sweep.runner``.
 
-Most sweeps belong in the YAML as a declarative ``sweep:`` block — see
+Most sweeps belong in the YAML as a declarative ``scenarios_sweep:`` block — see
 ``examples/continuous_reactor.yaml``, whose inlet-temperature axis drives two
 nodes at once with a multi-target ``path:``. A runner is only for a run-set
 that cannot be enumerated up front.
@@ -16,7 +16,7 @@ the flame blows out. Two consequences make a declarative axis wrong here:
    answer.
 2. The number of points is only known once extinction happens.
 
-Boulder resolves ``sweep.runner`` and calls it in-process with the store
+Boulder resolves ``scenarios_sweep.runner`` and calls it in-process with the store
 **directory** (one HDF5 file per run-set entry) and the config path. Entries go
 in through :func:`boulder.scenario_store.write_entry`, which stamps the
 fingerprint, config identity and display attrs the Scenario pane checks before

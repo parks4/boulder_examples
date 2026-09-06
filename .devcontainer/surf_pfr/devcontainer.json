@@ -1,0 +1,30 @@
+{
+  "name": "Boulder - Surface PFR (FlowReactor)",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": "../.."
+  },
+  "forwardPorts": [
+    8050
+  ],
+  "postCreateCommand": "conda env update -n boulder -f environment.yml --prune",
+  "postAttachCommand": "conda run -n boulder boulder examples/surf_pfr.yaml --host 0.0.0.0 --no-open",
+  "remoteEnv": {
+    "PATH": "/opt/conda/envs/boulder/bin:${containerEnv:PATH}"
+  },
+  "portsAttributes": {
+    "8050": {
+      "label": "Boulder - Surface PFR (FlowReactor)",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff"
+      ]
+    }
+  },
+  "remoteUser": "vscode"
+}

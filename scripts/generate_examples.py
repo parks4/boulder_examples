@@ -104,6 +104,23 @@ def _postprocess_body(example_id: str, body: str) -> str:
             "    closure: residence_time\n    tau_s: '{{residence_time}}'",
             "    closure: residence_time\n    tau_s: 0.1",
         )
+        # adapters/combustor.py is a single steady solve (no extinction loop),
+        # so sim2stone has no run-set to detect here -- the sweep itself is a
+        # host runner (boulder_examples/sweeps.py), declared explicitly since
+        # nothing in the adapter script implies it. This block was previously
+        # hand-added straight to the committed YAML (parks4/boulder_examples#c9c1b1b),
+        # outside this regeneration script -- moved here so `generate_examples.py`
+        # reproduces the full file, per this file's own "do not edit by hand".
+        body += (
+            "\n# Extinction sweep: residence time shrinks by a fixed factor until the "
+            "flame\n# blows out. The points must be solved sequentially -- each "
+            "warm-started from\n# the previous solve -- because this walks the "
+            "combustor down its extinction\n# branch; re-solving each point "
+            "independently would find the ignited solution\n# instead. The run-set "
+            "length is also only known once extinction happens, so no\n# declarative "
+            'axis can express it. See STONE_SPECIFICATIONS.md "scenarios_sweep.'
+            'runner:".\nscenarios_sweep:\n  runner: "boulder_examples.sweeps:combustor"\n'
+        )
     if example_id == "nanosecond_pulse_discharge":
         body = re.sub(
             r"-\n# derived_via: ast_match\n  id: gaussian_EN\n  kind: Gaussian\n"
@@ -153,6 +170,24 @@ def _postprocess_body(example_id: str, body: str) -> str:
         body = body.replace(
             "  solver:\n    kind: advance_grid\n    grid:\n",
             "  solver:\n    kind: advance_grid\n    atol: 1.0e-15\n    rtol: 1.0e-9\n    grid:\n",
+        )
+        # Same situation as combustor above: adapters/continuous_reactor.py runs
+        # a single baseline temperature (no upstream-style re-solve loop), so the
+        # inlet-temperature sweep is a host runner, not something sim2stone can
+        # detect from the adapter script.
+        body += (
+            "\n# Inlet-temperature sweep (the eleven points of upstream "
+            "continuous_reactor.py).\n#\n# A runner rather than a declarative "
+            "sweep: upstream carries each point's\n# converged composition into "
+            "the next, and that warm start is load bearing.\n# Solving each "
+            "temperature independently from a fixed initial composition\n# leaves "
+            "CVode a poor initial guess near the extinction boundary and the 825 K"
+            "\n# point fails its error test outright.\n#\n# (Its other obstacle -- "
+            "one swept value having to drive both the feed\n# reservoir and the "
+            'reactor\'s own initial state, since the reactor runs\n# energy: "off" '
+            "-- *is* expressible now with a multi-target sweep path: list,\n# but "
+            "that alone does not survive the numerics above.)\nscenarios_sweep:\n"
+            '  runner: "boulder_examples.sweeps:continuous_reactor"\n'
         )
     if example_id == "fuel_injection":
         body = body.replace(
