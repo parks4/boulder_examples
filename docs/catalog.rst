@@ -11,7 +11,7 @@ Steady combustor residence time
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/combustor.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/combustor.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/combustor.html <https://cantera.org/dev/examples/python/reactors/combustor.html>`_
 :Status: **adapted**
-:STONE: ``examples/combustor.yaml``
+:STONE: `examples/combustor.yaml <https://github.com/parks4/boulder_examples/blob/main/examples/combustor.yaml>`__
 :Mechanism: ``gri30.yaml``
 
 Upstream sweeps residence time down from 0.1 s in 0.9x steps until the combustor extinguishes (T <= 500 K). The points must be solved sequentially, each warm-started from the previous solve, because this walks the combustor down its extinction branch -- re-solving each point independently would find the ignited solution instead -- and the run-set length is only known once extinction happens. Neither fits a declarative axis, so the YAML declares scenarios_sweep.runner: boulder_examples.sweeps:combustor, which Boulder resolves and calls in-process. It writes one scenario per residence time with residence_time_s/final_temperature_K/heat_release_rate_w_m3 attrs -- pick Residence Time S / Heat Release Rate in the Sweep results pane's axis selectors for the same plot upstream's script produces.
@@ -33,7 +33,7 @@ Piston reactor with heat transfer
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor2.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor2.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/reactor2.html <https://cantera.org/dev/examples/python/reactors/reactor2.html>`_
 :Status: **adapted**
-:STONE: ``examples/reactor2.yaml``
+:STONE: `examples/reactor2.yaml <https://github.com/parks4/boulder_examples/blob/main/examples/reactor2.yaml>`__
 :Mechanism: ``gri30.yaml``
 
 Transient advance-grid example. The piston wall's expansion_rate_coeff (K) and heat_transfer_coeff (U) are both captured in STONE, so Boulder reproduces upstream's pressure-driven piston motion and heat exchange together; plots focus on reactor temperature and pressure evolution.
@@ -55,7 +55,7 @@ Nanosecond pulse discharge
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/nanosecond_pulse_discharge.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/nanosecond_pulse_discharge.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/nanosecond_pulse_discharge.html <https://cantera.org/dev/examples/python/reactors/nanosecond_pulse_discharge.html>`_
 :Status: **adapted**
-:STONE: ``examples/nanosecond_pulse_discharge.yaml``
+:STONE: `examples/nanosecond_pulse_discharge.yaml <https://github.com/parks4/boulder_examples/blob/main/examples/nanosecond_pulse_discharge.yaml>`__
 :Mechanism: ``example_data/methane-plasma-pavan-2023.yaml``
 
 Plasma micro-step example with Gaussian reduced-electric-field signal. Upstream runs with energy: "on" so plasma heating feeds back into gas temperature and accelerates the discharge; this adapter uses energy: "off" because Cantera 3.2's PlasmaPhase has no cp_mole() implementation, so energy: "on" raises "NotImplementedError: PlasmaPhase::cp_mole" the moment the reactor's energy equation needs a heat capacity. Without that thermal feedback the discharge never reaches upstream's self-sustaining avalanche regime, so temperature and product-species mole fractions stay many orders of magnitude below upstream's plot -- a genuine, currently open Cantera limitation (not a Boulder conversion defect). Re-check once PlasmaPhase::cp_mole is implemented upstream.
@@ -77,7 +77,7 @@ Mixer with two inlet streams
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/mix1.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/mix1.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/mix1.html <https://cantera.org/dev/examples/python/reactors/mix1.html>`_
 :Status: **adapted**
-:STONE: ``examples/mix1.yaml``
+:STONE: `examples/mix1.yaml <https://github.com/parks4/boulder_examples/blob/main/examples/mix1.yaml>`__
 :Mechanism: ``gri30.yaml``
 
 Dual-mechanism steady mixer with MFC and valve; uses solve_steady and OutletSink for the downstream boundary.
@@ -99,7 +99,7 @@ Constant-pressure ignition
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor1.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/reactor1.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/reactor1.html <https://cantera.org/dev/examples/python/reactors/reactor1.html>`_
 :Status: **adapted**
-:STONE: ``examples/reactor1.yaml``
+:STONE: `examples/reactor1.yaml <https://github.com/parks4/boulder_examples/blob/main/examples/reactor1.yaml>`__
 :Mechanism: ``h2o2.yaml``
 
 Single IdealGasConstPressureReactor with temperature advance limit and advance_grid transient integration.
@@ -121,7 +121,7 @@ Periodic CSTR
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/periodic_cstr.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/periodic_cstr.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/periodic_cstr.html <https://cantera.org/dev/examples/python/reactors/periodic_cstr.html>`_
 :Status: **adapted**
-:STONE: ``examples/periodic_cstr.yaml``
+:STONE: `examples/periodic_cstr.yaml <https://github.com/parks4/boulder_examples/blob/main/examples/periodic_cstr.yaml>`__
 :Mechanism: ``h2o2.yaml``
 
 CSTR with MFC, valve, and heat-transfer wall.
@@ -143,7 +143,7 @@ Fuel injection with Gaussian pulse
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/fuel_injection.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/fuel_injection.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/fuel_injection.html <https://cantera.org/dev/examples/python/reactors/fuel_injection.html>`_
 :Status: **adapted**
-:STONE: ``examples/fuel_injection.yaml``
+:STONE: `examples/fuel_injection.yaml <https://github.com/parks4/boulder_examples/blob/main/examples/fuel_injection.yaml>`__
 :Mechanism: ``nDodecane_Reitz.yaml``
 
 Transient fuel pulse; Gaussian MFC signal when AST detection succeeds.
@@ -189,7 +189,7 @@ Continuous reactor temperature sweep
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/continuous_reactor.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/continuous_reactor.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/continuous_reactor.html <https://cantera.org/dev/examples/python/reactors/continuous_reactor.html>`_
 :Status: **adapted**
-:STONE: ``examples/continuous_reactor.yaml``
+:STONE: `examples/continuous_reactor.yaml <https://github.com/parks4/boulder_examples/blob/main/examples/continuous_reactor.yaml>`__
 :Mechanism: ``gri30.yaml``
 
 The outer temperature sweep is declared inline. One swept value must reach two nodes -- the feed reservoir and the reactor's own initial state, since the reactor runs energy: "off" -- which a single-target axis could not express; a multi-target sweep path: list drives them in lockstep, so all eleven upstream temperatures run from the YAML with no script. Boulder records each point's axis value as a t0_K scenario attr, giving the Sweep results pane its X axis. Mechanism substituted: upstream's example_data/n-heptane-NUIG-2016.yaml (1268 species) is not bundled in Boulder CI's Cantera distribution and is also impractically slow to clone through Boulder's per-node solve pipeline; this repo vendors it under upstream/cantera/example_data/ for provenance, but the shipped example uses the bundled gri30.yaml (CH4/O2/N2) — same CSTR topology and sweep methodology, CH4/CO/O2 in place of NC7H16/CO/O2.
@@ -251,7 +251,7 @@ Moving piston with velocity wall
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/piston.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/piston.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/piston.html <https://cantera.org/dev/examples/python/reactors/piston.html>`_
 :Status: **adapted**
-:STONE: ``examples/piston.yaml``
+:STONE: `examples/piston.yaml <https://github.com/parks4/boulder_examples/blob/main/examples/piston.yaml>`__
 :Mechanism: ``gri30.yaml``
 
 Dual-mechanism piston (h2o2.yaml left / gri30.yaml right) driven purely by a Wall velocity callable -- no expansion_rate_coeff/heat_transfer_coeff at all. Wall velocity Func1s (Cantera 3.0+) always read back as the evaluated float at the network's current time (same limitation as MassFlowController.mass_flow_rate), so sim2stone recovers the closure from source via AST detection instead: a ``{closure: pressure_proportional, coeff, start_time}`` spec matching upstream's ``def v(t): if t < 0.1: return 0.0 else: return (r1.phase.P - r2.phase.P) * 1e-4``. Dual-mechanism itself needed no new work -- per-node mechanism overrides already existed (see reactor2.yaml).
@@ -305,7 +305,7 @@ Surface PFR (FlowReactor)
 :Upstream: `https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr.py <https://github.com/Cantera/cantera/blob/main/samples/python/reactors/surf_pfr.py>`_
 :Cantera docs: `https://cantera.org/dev/examples/python/reactors/surf_pfr.html <https://cantera.org/dev/examples/python/reactors/surf_pfr.html>`_
 :Status: **adapted**
-:STONE: ``examples/surf_pfr.yaml``
+:STONE: `examples/surf_pfr.yaml <https://github.com/parks4/boulder_examples/blob/main/examples/surf_pfr.yaml>`__
 :Mechanism: ``methane_pox_on_pt.yaml``
 
 Real distance-marched ct.FlowReactor + ct.ReactorSurface (catalytic methane partial oxidation over Pt), not a chain-of-CSTRs approximation -- solved via solver.axis: distance (parks4/boulder#112). The adapter stops before the distance-marching loop (kept under `if False:`, same convention as piston.py's stepping guard) so sim2stone captures the true inlet state instead of the fully-converted outlet state. FlowReactor.mass_flow_rate is write-only in the Cantera 3.2 Python API; sim2stone recovers it from continuity (density x speed x area) instead of a direct read. Known gap: download_script_emitter.py doesn't support FlowReactor yet (a separate reactor-dispatch pathway from create_reactor_from_node), so the --download native-script test is skipped for this example -- YAML validation, normalization, and the real DualCanteraConverter solve all work correctly.

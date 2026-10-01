@@ -15,6 +15,7 @@ from boulder_examples.catalog import codespaces_url as _codespaces_url  # noqa: 
 
 MANIFEST = REPO_ROOT / "examples" / "manifest.yaml"
 OUTPUT = REPO_ROOT / "docs" / "catalog.rst"
+REPO_BLOB_URL = "https://github.com/parks4/boulder_examples/blob/main"
 
 
 def _cantera_docs_url(upstream_file: str) -> str:
@@ -50,7 +51,8 @@ def main() -> int:
             lines.append(f":Reason: {entry['unsupported_reason']}")
             lines.append("")
             continue
-        lines.append(f":STONE: ``{entry['stone_yaml']}``")
+        stone_url = f"{REPO_BLOB_URL}/{entry['stone_yaml']}"
+        lines.append(f":STONE: `{entry['stone_yaml']} <{stone_url}>`__")
         lines.append(f":Mechanism: ``{entry.get('mechanism', '')}``")
         if entry.get("notes"):
             lines.append("")
